@@ -1,0 +1,58 @@
+01.01.1975 00:00:00.00         % start time
+01.06.1975 01:00:00.00         % end time
+        0.0                    % offset
+pic                            % computation method (exp, adi, apk, bcg, pic, mix)
+       3600.                   % dtbach [s] maximum time step for drainage network
+          1.e-9                % qtol  threshold for starting drainage networt computation [cbm/s pro s]
+       3600.                   % dt_max [s] max. time step
+          0.01                  % dt_min [s] min. time step
+         10.00                 % dt [s] (Startzeitschritt) initial time step
+          0.030                % d_Th_opt [-] optimum change of soil moisture
+          0.030                % d_Phi_opt [-] optimum change of suction head
+          7                    % n_gr (3) threshold for reducing reducing time step but carrying on the actual iteration
+         12                    % it_max (7) max. number of Picard-iterations
+          1.e-4                % piceps [-] (1.e-3) convergence criterium for Picard iteration
+          1.e-7                % cgeps  [m] (5.e-6) convergence criterium for cg method.
+         15.                   % rlongi longitude for computation of time (CET)
+          8.18                 % longi                                                  Aktualisieren für Ebnit
+         49.02                 % lati   reference latitude of the catchment             Aktualisieren für Ebnit
+          0                    % istact number of solutes accounted for
+          -80	               % Seed for random number generator
+noiact                         % switch for simulation of interaction between subsurface and channel water (simact -> yes, noiact -> no)
+     18                        % number of output files
+0 0 1  0 0 0  0 0 0  1 1 1  0 0 0  0 0 0 switch for simulation output either at prinout times (0) or at each time step (1)
+schaefer/out/log.out            % ofile(1)  Log-file
+schaefer/out/vg_tab.out         % ofile(2)  tables fo soil hydrailic properties
+schaefer/out/bilanz.out         % ofile(3)  water balance file
+schaefer/out/feuchte.out        % ofile(4)  soil water content
+schaefer/out/psi.out            % ofile(5)  suction head
+schaefer/out/psi.fin              % ofile(6)  final state (suction head, may be used as initial state for new simulations)
+schaefer/out/fl_xsi.out         % ofile(7)  water flux in xsi-direction (lateral)
+schaefer/out/fl_eta.out         % ofile(8)  water flux in eta-direction (vertical)
+schaefer/out/senken.out         % ofile(9)  sinks [qm/s]
+schaefer/out/qoben.out          % ofile(10) Surface runoff[cbm/s]
+schaefer/out/etinz.out          % ofile(11) Evapotranspiration
+schaefer/out/gang.out           % ofile(12) channel flow
+schaefer/out/ve.out             % ofile(13) generalised pore water velocity in eta-direction
+schaefer/out/vx.out             % ofile(14) generalised pore water velocity in xsi-direction
+schaefer/out/c.out              % ofile(15) residual solute concentrations
+schaefer/out/hko.out            % ofile(16) vertical hillslope coordinates (grid nodes) schaefer/in/ebnitbach.def
+schaefer/out/sko.out            % ofile(17) lateral hillslope coordinates (grid nodes) schaefer/in/ebnitsoilcp.def
+schaefer/out/relsat.out         % ofile(18) relative Saturation
+4
+schaefer/in/boden.def              % Bodenartendefinition iupsoila.def
+schaefer/in/s_zeit.def          % Zeitreihen
+schaefer/in/landnutz.def            % Def. der Pfade der Nutzungstypen
+schaefer/in/tannwind.def          % Windrichtung
+
+-1
+schaefer/in/hang1.geo
+schaefer/in/simple_soil.bod
+schaefer/in/ks_feldJahr.dat   		%NEU
+schaefer/in/th_feldJahr.dat   		%NEU
+schaefer/in/schaf.mak
+schaefer/in/schaf.cv
+schaefer/in/initial_bkp.in
+schaefer/in/tannh.prt
+schaefer/in/hang.pob
+schaefer/in/schaf.rb

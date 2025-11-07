@@ -1,0 +1,399 @@
+<chapter id='stepWise'>
+  <title>
+    Tutorial: Creation of input files
+  </title>
+  <para>
+    Here you can find a detailed description how input files for the catflow wizard are
+    made from the <link linkend='DEM'>digital elevation model (DEM)</link>.
+  </para>
+  <section id='creatingDEM'>
+    <title>
+      Creating the grid (tin) of your digital elevation model DEM
+    </title>
+    <para>
+      Depending on the format of your DEM data, there are different ways to generate a
+      grid. Check the ArcToolbox Conversion Tools for an import filter
+      for your data. The DEM as shown in figure <xref linkend="malalcDEM"/> will be used throughout this tutorial.
+    </para>
+    <para>
+      At the university of Oslo, there is a <ulink url='http://www.geo.uio.no/geogr/geomatikk/oppgaver/geo4510_01_digital_terrain_model.html'>exercise</ulink> to convert contour lines into a DEM.
+      The corresponding text is also here:
+    </para>
+    <para>
+      The first approach is to create a TIN from the contours, and then interpolate a grid. You use three coverages, (1) contour lines, (2) river
+     lines, (3) lakes. Contour lines contain your information about altitudes, rivers are break lines indicating local minimums in the terrain, and
+     lakes are pits, indicating a flat area with constant altitude. You create the dataset with the command "ARCTIN", consult the tutor about
+     syntax. You can also start the ARCTOOLS program which gives you a more menu-based approach (use "command
+     tools"->"conversion"->"surface"->"tin builder". The resulting TIN must be converted into a grid by the command "TINLATTICE". Here you
+     have the choice between a linear and a spline (quintic) interpolator, check and assess both results.
+    </para>
+    <para>
+      This can also be done in ArcGIS. Here you display your data sets first (contours, rivers, lakes). From the 3D analyst toolbar you make
+     the TIN from selected coverages. This is the user-friendly option. In both cases you should introduce break lines also for ridges. These
+     break lines you must digitise manually on the screen (make a new data set, lines, digitze lines on areas indicating large transitions of
+     topography, such as steep mountain walls). We will help you with this during the lab.
+    </para>
+    <para>
+      The second approach is to use the TOPOGRID-algorithm in ArcInfo. This is based on an algorithm proposed by Hutchinson (1989).
+     Open Arc (ArcGIS->ArcInfo Workstation>Arc), go to your workspace and try the command "topogridtool". This is a window based
+     interface to topogrid, but you might need to get some help from the tutor here as well. The interpolator is a local spline, iteratively
+     adapting an elevation model to the data points. You can read more about this in the ArcDoc or <xref linkend='Hutchinson'/>:
+    </para>
+    
+  </section>
+  <section>
+    <title>
+      Activate the <link linkend='hydrologyExtension'>hydrology sample extension</link>
+    </title>
+    <para>
+      This tutorial was writen based on ESRI Hydrotools Version 2 (Distributed
+      with ArcMap 8.3, Build 800).
+      You need administrators rights to activate the hydrology extension!
+    </para>
+    <orderedlist numeration="arabic">
+      <listitem>
+        <para>
+          Open the <command>Tools:Customize</command> dialog from the menu 
+        </para>
+        <graphic fileref="figures/customize.png"/>
+      </listitem>
+      <listitem>
+        <para> 
+          Click on <command>Add from Files...</command>
+        </para>
+        <graphic fileref="figures/addFile.png"/>
+      </listitem>
+      <listitem>
+        <para> 
+          Select <filename>C:\arcgis\arcexe83\ArcObjects Developer Kit\Samples\Spatial Analyst\Hydrology Modeling\esrihydrology_v2.dll</filename> 
+          and click on <command>Open</command>
+        </para>
+      </listitem>
+      <listitem>
+        <para> 
+          Activate the <command>Hydrology Modeling</command> Toolbar and
+          click on <command>Close</command>
+        </para>
+      </listitem>
+    </orderedlist>
+  </section>
+  <section id='CreatingRiverNetwork'>
+    <title>
+      Vectorized river network
+    </title>
+    <para>
+      Once your DEM is available as grid or tin the 
+      <link linkend='hydrologyExtension'>hydrology extension</link> may be used 
+      to generate a vectorized river network. Note that the hydrology extension
+      is based on the spatial-analyst. You can define the extent of your analysis to
+      some part of your DEM (e.g. the 
+      <link linkend='watershedDelineation'>catchment boundaries</link>)
+       using the spatial-analysts option menu from the toolbar
+       (see <link linkend='activateToolbars'>activateToolbars</link> for
+       activating the corresponding toolbar) as shown here:
+      <graphic fileref="figures/3d_options.png"/>
+    </para>
+    <para>  
+      If you have a river network available
+      as a shape file (vector) it is probably based on
+      additional information besides the DEM. Consider to
+      use this version or a mixed version of a river network instead of generating
+      a version only based on the DEM.
+      <figure id='malalcDEM'>
+        <title>
+          Sample DEM: Malalcahuello, Chile
+        </title>
+        <graphic fileref="figures/malalcDEM.png"/>
+      </figure>
+      The following steps are necessary to create the vectorized river network
+    </para>
+    <orderedlist numeration="arabic">
+      <listitem>
+        <para>
+          Create a depressionless DEM as described in the <link linkend='fill'>
+          corresponding chapter</link> of the hydrology extension manual. 
+        </para>
+      </listitem>
+      <listitem>
+        <para> 
+          Create a flow direction file as describe in the <link linkend='flowDirection'>
+          corresponding chapter</link> of the hydrology extension manual.
+        </para>
+        <figure id='malalcDirection'>
+          <title>
+            Flow directions
+          </title>
+          <graphic fileref="figures/malaDir.png"/>
+        </figure>
+      </listitem>
+      <listitem>
+        <para> 
+          Create a flow accumulation file as describe in the <link linkend='flowAccumulation'>
+          corresponding chapter</link> of the hydrology extension manual.
+        </para>
+        <figure>
+          <title>
+            Flow Accumulation
+          </title>
+          <graphic fileref="figures/malaAccu.png"/>
+        </figure>
+      </listitem>
+      <listitem>
+        <para> 
+          Create a river net shape file as describe in the <link linkend='vectorizeRiver'>
+          corresponding chapter</link> of the hydrology extension manual. In "Pr&auml;prozessing
+          f&uuml;r das Programm CATFLOW" (Casper, Lindenmaier, Maurer und Zehe, 2003) the minimum
+          number of cells for a stream is suggested to be 100. However, this value may be altered
+          according to your needs.
+        </para>
+        <para>
+          Since a shapefile for the river network in Malalcahuello existed before, that version will be
+          used for the rest of this tutorial instead of the network derived from the DEM.
+        </para>
+        <figure>
+          <title>
+            Vectorized river network
+          </title>
+          <graphic fileref="figures/malaRiver.png"/>
+        </figure>
+      </listitem>
+    </orderedlist>
+  </section>
+  <section id='creatingSlopePoly'>
+    <title>
+      Slope delineation
+    </title>
+    <para>
+      Before creating the slope delineation, make sure the following three toolbars
+      are active: Editor, Spatial Analyst and Topology.
+      <figure id='activateToolbars'>
+        <title>
+          Activating Toolbars
+        </title>
+        <graphic fileref="figures/toolbars.png"/>
+      </figure>
+    </para>
+    <orderedlist numeration="arabic">
+      <listitem>
+        <para>
+          In ArcCatalog copy (edit:copy and edit:paste)
+          your shapefile with the vectorized river network
+          into a new file called borders.shp. 
+        </para>
+      </listitem>
+      <listitem>
+        <para> 
+          Create a new polygon shape files (<command>File:New...:Shape...</command>)
+          in ArcCatalog called hillslope. As Spatial Reference, import
+          the coordinate system from your river network shape file 
+          (<command>Edit...:Import...</command>).
+        </para>
+        <graphic fileref="figures/newPoly.png"/>
+      </listitem>
+      <listitem>
+        <para>
+          Add the two new shapefiles (borders and hillslope) to your view in ArcMap 
+          (<command>File:Add data...</command>).
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+          Delineate your overall catchment as described in <xref linkend="watershedDelineation"/>
+          <graphic fileref="figures/catchment.png"/>
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+          Convert your overall catchment into a polygon using the spatial analyst
+          (<command>Spatial Analyst:Convert:RasterToFeatures...</command>). Use
+          the catchment created in the previous step as your input raster. Use
+          a polygon for the output feature and call the resulting theme catchborder.
+          <graphic fileref="figures/convertCatch.png"/>
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+          Start an editing session in your shapefile borders 
+          (<command>Editor:Start edititing</command>). 
+          <graphic fileref="figures/editSess.png"/>
+          
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+          In the editor toolbar,
+          set the task to <command>Create New Feature</command> and the
+          target to <command>borders</command>. Using the selectFeature tool,
+          select the catchment border polygon from catchborder. 
+          
+          <graphic fileref="figures/selectFeature.png"/>
+          Click on constructFeatures on the topology
+          tool bar to add the catchment boundary to the borders
+          shape file.
+          <graphic fileref="figures/construct.png"/>
+          <graphic fileref="figures/constructDialog.png"/>
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+          Display the borders theme together with your flow direction raster.
+          This will be your base to digitize your hill slopes.
+          <graphic fileref="figures/makeSlopes.png"/>
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+          Set the snap environment 
+          (<command>Editor:Snapping...</command>) to
+          the Edges and Vertezes of the borders theme.
+          <graphic fileref="figures/snap.png"/>
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+          Use the sketch tool to digitize the hillslopes based on the
+          direction raster. As a general rule, points of the same hillslope share
+          the same flow direction. You can also use the 
+          <link linkend='raindrop'>rain drop tool</link> to determine the local flow direction.
+          Also make sure, hillslopes have unique soil and land use properties.
+          <graphic fileref="figures/sketch.png"/>
+          <graphic fileref="figures/borders.png"/>
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+          In the editor toolbar, set the target to your 
+          <command>hillslope</command> theme. Using the selectFeature
+          tool, select all lines from your borders theme. 
+          Click on constructFeatures on the topology
+          tool bar to add the just defined hill slopes to the hillslope
+          shape file.
+        </para>
+        <para>
+          In ArcMap Version "8.3 Build 800" a bug causes the created polygons
+          to have errors (a part of the points are shifted). This
+          error does not occur if the catchment border from the
+          catchborder theme is copied into the hillslope theme.
+        </para>
+        <para>
+          If lines in your river network are not snaped correctly,
+          some of your hillslopes are connected. This does not happen
+          if your river net is build with the hydro sample extension as
+          described in <xref linkend='CreatingRiverNetwork'/>. To snap
+          your river network correctly, use the clean command in arcInfo
+          workstation.
+          <graphic fileref="figures/hillslope.png"/>
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+          End your edit session and save changes
+          <command>Editor: Stop Editing</command> theme. Hillslope.shp
+          contains your hillslope features.
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+          Display the attribute table of your hillslope theme. Add a new
+          integer field to contain the ID.
+          <graphic id='addID' fileref="figures/addID.png"/>
+          
+        </para>
+        <para>
+          Right click on the heading of the new column and click
+          <command>Calculate Values</command>. You must confirm the
+          following question.
+          <graphic fileref="figures/calcMsg.png"/>
+        </para>
+        <para>
+          Calculate the slope ID to be equal to the FID, the ArcGis object ID.
+          <graphic fileref="figures/calculator.png"/>
+          
+        </para>
+      </listitem>
+    </orderedlist>
+  </section>
+  <section id='creatingSlopeLine'>
+    <title>
+      Slope lines
+    </title>
+    <note>
+       Note that the wizard will check the direction of your
+       slope lines. If the outlet is higher than the start point
+       of your slope line (heights from your DEM), the line is
+       flipped. Make sure that your DEM has differing heights for
+       start point and outlet of your slope line.
+    </note>
+    <orderedlist numeration="arabic">
+      <listitem>
+        <para> 
+          Create a new line shape files (<command>File:New...:Shape...</command>)
+          in ArcCatalog called slopeLines. As Spatial Reference, import
+          the coordinate system from your river network shape file 
+          (<command>Edit...:Import...</command>).
+        </para>
+        <graphic fileref="figures/newLine.png"/>
+      </listitem>
+      <listitem>
+        <para>
+          Add the new shapefile to your view in ArcMap 
+          (<command>File:Add data...</command>).
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+          start an editing session with your shapefile slopeLines 
+          (<command>Editor:Start edititing</command>). 
+          <graphic fileref="figures/editSess.png"/>
+        </para>
+      </listitem>
+      
+      <listitem>
+        <para>
+          Display the hillSlope and the river network theme.
+          This will be your base to digitize your slope lines.
+          <graphic fileref="figures/hillslope.png"/>
+        </para>
+      </listitem>
+      
+      <listitem>
+        <para>
+          Set the snap environment 
+          (<command>Editor:Snapping...</command>) to
+          the Edges and Vertezes of the river theme.
+          <graphic fileref="figures/snap2.png"/>
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+          In the editor toolbar,
+          set the task to <command>Create New Feature</command> and the
+          target to <command>slopeLines</command>. 
+          Use the sketch tool to digitize the slope lines.
+          You can also use the 
+          <link linkend='raindrop'>rain drop tool</link> to determine the local flow direction.
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+          End your edit session and save changes
+          <command>Editor: Stop Editing</command> theme. slopelines.shp
+          contains your slope line features.
+          <graphic fileref="figures/slopeline.png"/>
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+          Right click on your slope line layer in the table of contents and click
+          <command>Joins and Relates:Join...</command>. Join the data based on
+          the geographical location with the hillslope theme. Each line will be given
+          the attributes if it falls completely inside a polygon. Save the new
+          theme as lineID. This theme contains the slope line features with
+          the same IDs as the hillslopes.
+          <graphic fileref="figures/joinID.png"/>
+        </para>
+        
+      </listitem>
+    </orderedlist>
+  </section>
+</chapter>

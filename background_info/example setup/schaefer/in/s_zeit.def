@@ -1,0 +1,22 @@
+PRECIPITATION / NIEDERSCHLAG 
+1
+schaefer/in/N_Schaf.dat                         % Niederschlagszeitreihe als Knickpunktdatei
+
+BOUNDARY CONDITIONS / RANDBEDINGUNGEN 
+0
+
+SINK/SOURCE / SENKEN
+0
+
+LANDUSE / LANDNUTZUNG  
+schaefer/in/lusets.def                          % Landnutzungszeitreihe
+
+CLIMATE / KLIMA
+1
+schaefer/in/schaf_klim.dat                         % Klimazeitreihen aus dem Duerreich-Gebiet
+
+MASSES / MASSEN inputmasse for particle tracking
+0
+
+DRAINAGE CHANNEL / VORFLUTER
+0

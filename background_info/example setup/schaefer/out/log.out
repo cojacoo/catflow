@@ -1,0 +1,40 @@
+  Oeffne Ausgabedatei   schaefer/out/log.out           (Unit: 35)
+  Oeffne Ausgabedatei   schaefer/out/vg_tab.out        (Unit: 36)
+  Oeffne Ausgabedatei   schaefer/out/bilanz.out        (Unit: 37)
+  Oeffne Ausgabedatei   schaefer/out/feuchte.out       (Unit: 38)
+  Oeffne Ausgabedatei   schaefer/out/psi.out           (Unit: 39)
+  Oeffne Ausgabedatei   schaefer/out/psi.fin           (Unit: 40)
+  Oeffne Ausgabedatei   schaefer/out/fl_xsi.out        (Unit: 41)
+  Oeffne Ausgabedatei   schaefer/out/fl_eta.out        (Unit: 42)
+  Oeffne Ausgabedatei   schaefer/out/senken.out        (Unit: 43)
+  Oeffne Ausgabedatei   schaefer/out/qoben.out         (Unit: 44)
+  Oeffne Ausgabedatei   schaefer/out/etinz.out         (Unit: 45)
+  Oeffne Ausgabedatei   schaefer/out/gang.out          (Unit: 46)
+  Oeffne Ausgabedatei   schaefer/out/ve.out            (Unit: 47)
+  Oeffne Ausgabedatei   schaefer/out/vx.out            (Unit: 48)
+  Oeffne Ausgabedatei   schaefer/out/c.out             (Unit: 49)
+  Oeffne Ausgabedatei   schaefer/out/hko.out           (Unit: 50)
+  Oeffne Ausgabedatei   schaefer/out/sko.out           (Unit: 51)
+  Oeffne Ausgabedatei   schaefer/out/relsat.out        (Unit: 52)
+  Oeffne Eingabedatei   schaefer/in/boden.def          (Unit: 55)
+  Oeffne Eingabedatei   schaefer/in/s_zeit.def         (Unit: 56)
+  Oeffne Eingabedatei   schaefer/in/landnutz.def       (Unit: 57)
+  Oeffne Eingabedatei   schaefer/in/tannwind.def       (Unit: 58)
+  Start: 01.01.1975 00:00:00.00
+  Ende:  01.06.1975 01:00:00.00   d.h.        13050000. [s]
+ t_off       0.0000000000000000     
+ dtbach      3600.0000000000000     
+ qtol        1.0000000000000001E-009
+ dt_max      3600.0000000000000     
+ dt_min      1.0000000000000000E-002
+ dt_s        10.000000000000000     
+ d_Th_opt    2.9999999999999999E-002
+ d_Phi_opt   2.9999999999999999E-002
+ n_gr                7
+ it_max             12
+ piceps      1.0000000000000000E-004
+ cgeps       9.9999999999999995E-008
+  Oeffne Eingabedatei   schaefer/in/N_Schaf.dat        (Unit: 67)
+  Oeffne Eingabedatei   schaefer/in/lusets.def         (Unit: 29)
+  Oeffne Eingabedatei   schaefer/in/schaf_klim.dat     (Unit: 63)
+  Eingabedatei     schaefer/in/weizen.par       (Unit: 28) existiert nicht!

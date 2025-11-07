@@ -1,0 +1,222 @@
+/*  Programm: xyzpkthg.AML 
+/*  Modifiziert fuer Duerreych-Gesamtgebeit
+/*  M. Casper, IWK, 15.2.2001
+/*   Achtung: Dies ist ein Unterprogramm fuer die Erzeugung von
+/*   CATFLOW-Eingabedaten (file xyzpkthg.out)
+/*   Die Funktionen sind modifiziert..
+/*   Anmerkung die Punktcoverage muss die Attribute zur HANG-ID, Pkt_id
+/*   enthalten, sie können z.B. per Intersect erzeugt werden.
+/*   Zweck: Schreibt die an den Punkten einer Punktecoverage ermittelten
+/*          Hoehenwerte aus einem DHM in eine ASCII-Datei 
+/*          (X  Y  Z PKT-ID HANG-ID)
+/*            
+/* Argumente: <point_cover> - Namen des pointcoverages
+/*            <elevation_grid> - Name des Hoehenmodell-grids
+/*            <ASCII file_name> - Name der output-ASCII-Datei 
+/*            <HELP>     - Schluesselwort zum Starten der Hilferoutine
+/*            <Subroutine> - Name der zu startenden Subroutine 
+/* Annahmen:  keine 
+/* Eingaben:  keine 
+/* Ausgaben:  keine 
+/* Programmaufrufe: 
+/* erzeugte Globalvariablen:    keine
+/* notwendige Globalvariablen:   keine 
+/* Systemabhaengigkeiten:        keine 
+/*
+/**Ende  
+/**Paket:                       POINTELEVATION 
+/**Schluesselwoerter:  
+/*-------------------------------------------------------------------------- 
+/* Programmaufrufe: POINTELEVATION <point_cover> <elevation_grid> <ASCII file>
+/*                  POINTELEVATION <HELP>
+/*                  POINTELEVATION <routine> {args} 
+/*==========================================================================
+/* Entstehungsgeschichte:  20/09/95 Knut Buescher - Original 
+/* Standards:             Programmer's Guide (Nov 93), Standards 
+/* Bekannte Probleme:     Kein Punkt in dem Namen der ASCII-Datei
+/* Geaendert:             5/12/96 B. Gluesing, 6.12.96 M. Casper 
+/* Geaendert:             18/8/2000 M.Casper
+/*========================================================================== 
+&args point_cover ele_grid file arglist:REST
+/*
+/* Fehlerbehandlung ...
+&severity &error &routine bailout
+/*
+/* Variblen_name (in .pat der Punktcoverage vorhanden!!) setzen
+&sv hang_item = s_cf_area3-id
+
+/* zulaessige Routinen in der Routinen-Liste
+&s routine_list = INIT, USAGE, HELP, BAILOUT, EXIT
+/*
+/* Argumente pruefen ...
+/*
+&set routine INIT
+
+&select [TRANSLATE %routine%]
+  &when %routine_list%
+    &s check_routine .true.
+  &otherwise
+    &s check_routine .false.
+&end
+&if not %check_routine% &then
+ &call USAGE
+
+/* Starten der Subroutine ...
+&call %routine%
+&return
+
+/*------------------------------------------------
+&routine INIT   
+/*------------------------------------------------
+/*
+/* Terminal-Definition ...
+/*
+&if [NULL [EXTRACT 1 [SHOW &terminal]]] &then
+    &terminal 9999
+&if [EXTRACT 1 [SHOW &terminal]] ne 9999 &then
+  &return Das Programm laeuft nur auf Terminals ~
+          \mit X-Windows-Umgebung
+
+/* check current module
+&if [TRANSLATE [SHOW PROGRAM]] ne GRID &then
+  &return &inform POINTELEVATION requires GRID !
+/*
+/* check arguments
+/* wenn keine Argumente angegeben benutzt er default-Werte!!
+&if [NULL %point_cover%] &then
+  &do
+    &sv point_cover = s_h_p_id
+  &end
+&if [NULL %ele_grid%] &then
+  &do
+    &sv ele_grid = schaf_f
+  &end   
+&if [NULL %file%] &then
+  &do
+    &sv file = xyzpkthg.out
+  &end
+&if NOT [EXISTS %point_cover% -POINT] &then
+  &return &inform "%point_cover%" is not a valid point coverage !
+&if NOT [EXISTS %ele_grid% -GRID] &then
+  &return &inform Grid "%ele_grid%" does not exist !
+&if [EXISTS %file% -FILE] &then
+  &return &inform File "%file%" already exists !
+/*
+/* Copy point cover to working copy
+&if [EXISTS xxpointle -COVER] &then
+  KILL xxpointle ALL
+&if [EXISTS xxpointle -COVER] &then
+  &return &inform Unable to delete temp. working copy of "%point_cover%" (xxpointle)
+COPY %point_cover% xxpointle
+
+/* Erzeuge XY-Koordinaten
+
+ARC ADDXY xxpointle POINT
+&messages &off
+ARC DESCRIBE xxpointle
+
+/*&messages &on
+&set .pointelevation$points = %DSC$POINTS%
+&if [NULL %.pointelevation$points%] &then
+  &return &inform Error: No points in PAT to process... !
+&else
+  &type %.pointelevation$points% points to process...
+/*
+/* Open ASCII output file
+/* The current output format is X      Y      Z   Pkt_id Hang_id
+&set fileunit = [OPEN %file% openstat -WRITE]
+/*
+/* SCHLEIFE
+/* Retrieve elevation values for each point 
+&do j = 1 &to %.pointelevation$points%
+   CLEARSELECT
+/*   RESELECT xxpointle.pat INFO $RECPO eq %j%
+   RESELECT xxpointle.pat INFO xxpointle# eq %j%
+   &set .pointelevation$x%j% = [SHOW SELECT xxpointle.pat INFO 1 ITEM X-COORD]
+   &set .pointelevation$y%j% = [SHOW SELECT xxpointle.pat INFO 1 ITEM Y-COORD]
+   &set .hang_id%j% = [SHOW SELECT xxpointle.pat INFO 1 ITEM %hang_item%]
+   &set .pkt_id%j% = [SHOW SELECT xxpointle.pat INFO 1 ITEM xxpointle-id]
+
+/*   &set .area%j% = [SHOW SELECT xxpointle.pat INFO 1 ITEM AREA]
+/*   &set .point-id%j% = [SHOW SELECT xxpointle.pat INFO 1 ITEM FALLPTS-ID]
+   /*
+   /* Format Gauss-Krueger coordinates to 10 characters to create an
+   /* even-formatted output file
+   /*
+   &if [LENGTH [VALUE .pointelevation$x%j%]] eq 7 &then 
+   &set .pointelevation$x%j% = [VALUE .pointelevation$x%j%].00
+   &if [LENGTH [VALUE .pointelevation$y%j%]] eq 7 &then 
+   &set .pointelevation$y%j% = [VALUE .pointelevation$y%j%].00
+   &if [LENGTH [VALUE .pointelevation$x%j%]] eq 9 &then 
+   &set .pointelevation$x%j% = [VALUE .pointelevation$x%j%]0
+   &if [LENGTH [VALUE .pointelevation$y%j%]] eq 9 &then 
+   &set .pointelevation$y%j% = [VALUE .pointelevation$y%j%]0
+
+
+/*
+/* Hier wird die Hoehe im Grid abgefragt
+/*
+   &set .pointelevation$value%j% = ~
+   [SHOW CELLVALUE %ele_grid% [VALUE .pointelevation$x%j%] ~
+   [VALUE .pointelevation$y%j%]]
+/* Formatierung...
+   &if [LENGTH [VALUE .pointelevation$value%j%]] eq 3 &then 
+   &set .pointelevation$value%j% = [VALUE .pointelevation$value%j%].0000
+   &if [LENGTH [VALUE .pointelevation$value%j%]] eq 4 &then 
+   &set .pointelevation$value%j% = [VALUE .pointelevation$value%j%].000
+   &if [LENGTH [VALUE .pointelevation$value%j%]] eq 5 &then 
+   &set .pointelevation$value%j% = [VALUE .pointelevation$value%j%]000
+   &if [LENGTH [VALUE .pointelevation$value%j%]] eq 6 &then 
+   &set .pointelevation$value%j% = [VALUE .pointelevation$value%j%]00
+   &if [LENGTH [VALUE .pointelevation$value%j%]] eq 7 &then 
+   &set .pointelevation$value%j% = [VALUE .pointelevation$value%j%]0
+
+/* hier wird geschrieben in -> fileunit
+   &set writestat = [WRITE %fileunit% ~
+     [QUOTE [VALUE .pointelevation$x%j%]  [VALUE .pointelevation$y%j%]  ~
+     [VALUE .pointelevation$value%j%]  [VALUE .pkt_id%j%]  [VALUE .hang_id%j%]]]
+
+/*  ENDE SCHLEIFE   
+&end
+/*
+/* close output file
+&set closestat = [CLOSE %fileunit%]
+&messages &on
+/*
+CLEARSELECT
+/*
+/* Delete temp. working copy of point coverage
+&if [EXISTS xxpointle -POINT] &then
+  KILL xxpointle ALL
+&if [EXISTS xxpointle -POINT] &then
+  &return &inform Unable to delete temp. working copy of "%point_cover%" (xxpointle)
+/*
+&return
+
+/*--------------------------------------------------
+&routine USAGE
+/*--------------------------------------------------
+&type Usage: POINTELEVATION <point_cover> <elevation_grid> <ASCII file_name>
+&type Usage: POINTELEVATION <HELP>
+&type Usage: POINTELEVATION <routine> {args}
+&return &inform 
+
+/*-------------------------------------------------
+&routine HELP
+/*-------------------------------------------------
+&popup pointelevation.hlp
+&return
+
+/*-------------------------------------------------
+&routine BAILOUT
+/*-------------------------------------------------
+&severity &error &ignore
+&severity &warning &ignore
+&call EXIT
+&return &warning Error in routine: [TRANSLATE %routine%] (POINTELEVATION.AML).
+
+/*-------------------------------------------------
+&routine EXIT
+/*-------------------------------------------------
+&dv .pointelevation:*
+&return

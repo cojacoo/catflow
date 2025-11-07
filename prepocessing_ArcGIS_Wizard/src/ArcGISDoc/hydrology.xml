@@ -1,0 +1,629 @@
+<chapter id='hydrologyExtension'>
+  <title>
+    Hydrology Modeling Sample Extension
+  </title>
+  <para>
+    This chapter is a copy of the manual to the 
+    <ulink url='www.maproom.ruc.dk/Courses/natbas/geografi-b/Hydro_model/hydrology_modeling_sample_extens.htm'>
+      Hydrology Modeling Sample Extension
+    </ulink>. Unfortunately the document does not name an author, nor does it give
+    a copy right or a lisence. Let me know if the document should not be used as done here and
+    I will remove it.
+  </para>
+  <section>
+    <title>
+      Surface hydrologic analysis in ArcGIS
+    </title>
+    <para>
+      The shape of a surface determines how 
+      water will flow across it. The sample hydrologic analysis extension in ArcGIS 
+      provides a method to describe the physical characteristics of a surface. Using a 
+      digital elevation model as input, it is possible to delineate a drainage system 
+      and then quantify the characteristics of that system. The tools in the extension 
+      let you determine, for any location in a grid, the upslope area contributing to 
+      that point and the downslope path water would follow.
+    </para>
+    <para>
+      Watersheds and stream networks, created 
+      from DEMs using the sample extension, are the primary input to most surface 
+      hydrologic models. These models are used for determining the height, timing, and 
+      inundation of a flood, as well as locating areas contributing pollutants to a 
+      stream, or predicting the effects of altering the landscape.
+    </para>
+    <para>
+      An understanding of the shape of the 
+      Earths surface is useful for many fields such as regional planning, agriculture 
+      and forestry. These fields require an understanding of how water flows across an 
+      area, and how changes in that area may affect that flow.
+    </para>
+    <para>
+      Before you can model the behavior of 
+      water, you must determine where the water came from and where it is going. The 
+      following sections explain how to use the tools in the sample extension to help 
+      model the movement of water across a surface. The next section briefly explains 
+      the concepts and key terms regarding drainage systems and surface processes. 
+      Later sections explain how the sample extension can be used to extract 
+      hydrologic information from a DEM.
+    </para>
+  </section>
+  <section>
+    <title>
+      Drainage system
+    </title>
+    <para>
+      The area upon which water falls, and the 
+      network through which it travels to an outlet is referred to as a <emphasis>drainage system</emphasis>    . The flow of water through a drainage system is only a subset of what 
+      is commonly referred to as the <emphasis>hydrologic cycle</emphasis>    , which also includes 
+      precipitation, evapotranspiration, and groundwater. This discussion concerns the 
+      movement of water across a surface.
+    </para>
+    <para>
+      A drainage basin is an area that drains 
+      water and other substances to a common outlet as concentrated drainage. Other 
+      common terms for a drainage basin are<emphasis>watershed</emphasis>    , <emphasis>basin</emphasis>    , <emphasis>
+      catchment</emphasis>    , or <emphasis>contributing area</emphasis>    . This area is normally defined as the 
+      total area flowing to a given outlet, or pour point. An <emphasis>outlet</emphasis>    , or <emphasis>
+      pour point</emphasis>     is the point at which water flows out of an area. This is usually 
+      the lowest point along the boundary of the drainage basin. The boundary between 
+      two basins is referred to as a <emphasis>drainage divide</emphasis>     or <emphasis>watershed boundary</emphasis>    . 
+      We will use the terms watershed, pour point, and watershed boundary in this 
+      document.
+      <graphic border="0" width="397" depth="336" fileref="figures/image002.jpg" >
+      </graphic>
+      If a basin or contributing area is the 
+      total area flowing to an outlet, a subleasing or local area is the upstream area 
+      flowing to an outlet as overland flow (i.e., not including channel flow from 
+      upstream basins).
+    </para>
+    <para>
+      The network through which water travels 
+      to the outlet can be visualized as a tree, with the base of the tree being the 
+      outlet. The branches of the tree are stream channels. The intersection of two 
+      stream channels is referred to as a node or <emphasis>junction</emphasis>    . The sections of a 
+      stream channel connecting two successive junctions, or a junction and the outlet 
+      are referred to as <emphasis>interior links</emphasis>    . <emphasis>Exterior links</emphasis>     are the 
+      outermost branches of the tree, (i.e., they have no tributaries). 
+      <graphic border="0" width="357" depth="216" fileref="figures/image004.jpg" >
+      </graphic>
+    </para>
+  </section>
+  <section id='DEM'>
+    <title>
+      Digital elevation model
+    </title>
+    <para>
+      The most common digital data of the 
+      shape of the Earths surface is cell-based DEMs (digital elevation models). This 
+      data is used as input to the sample extension to quantify the characteristics of 
+      the land surface.
+    </para>
+    <para>
+      A DEM is a raster representation of a 
+      continuous surface, usually referring to the surface of the Earth. The accuracy 
+      of this data is determined primarily by the resolution (the distance between 
+      sample points). Other factors affecting accuracy are data type (integer or 
+      floating point) and the actual sampling of the surface when creating the 
+      original DEM.
+      <graphic border="0" width="155" depth="178" fileref="figures/image006.jpg" >
+      </graphic>
+      Errors in DEMs are usually classified as 
+      either sinks or peaks. A <emphasis>sink</emphasis>   is an area surrounded by higher elevation 
+      values, and is also referred to as a depression or pit. This is an area of 
+      internal drainage. Some of these may be natural, particularly in glacial or 
+      karst areas (Mark, 1988), although many sinks are imperfections in the DEM. 
+      Likewise, a spike or <emphasis>peak</emphasis>   is an area surrounded by cells of lower value. 
+      These are more commonly natural features, and are less detrimental to the 
+      calculation of flow direction.
+    </para>
+    <para>
+      Errors such as these, especially sinks, 
+      should be removed before attempting to derive any surface information. Sinks, 
+      being areas of internal drainage, may cause undesirable results when calculating 
+      flow direction. Refer to the section Creating a depressionless DEM
+      for further discussion of removing or filling sinks.
+      <graphic border="0" width="323" depth="113" fileref="figures/image008.jpg" >
+      </graphic>
+      The number of sinks in a given DEM is 
+      normally higher for coarser resolution DEMs. Another common cause of sinks 
+      results from storing the elevation data as an integer number. This can be 
+      particularly troublesome in areas of low vertical relief. It is not uncommon to 
+      find 1% of the cells in a 30-meter-resolution DEM to be sinks. This can jump 
+      sometimes as high as 5% for a 3-arc-second DEM.
+    </para>
+    <para>
+      DEMs may also contain noticeable 
+      horizontal striping, which results from systematic sampling errors when creating 
+      the DEM. This again is most noticeable on integer data in flat areas.
+    </para>
+    <para>
+      The tools described here are designed to 
+      model the convergence of flow across a natural terrain surface. There is an 
+      assumption that the surface contains sufficient vertical relief that a flow path 
+      can be determined. The tools assume that water can flow in from many cells but 
+      out through only one cell. These tools are not appropriate for modeling flow in 
+      man-made drainage features such as canals or streets, since the resolution of 
+      the elevation surface would need to be very high to identify them.
+    </para>
+  </section>
+  <section>
+    <title>
+        Deriving surface runoff characteristics using the 
+      Sample Extension
+    </title>
+    <para>
+      The hydrologic sample extension has a 
+      set of dialogs to delineate watersheds or define stream networks. In addition to 
+      watershed and network analysis, it has two interactive tools, one to model how 
+      water if dropped at a specified location will flow through the landscape and the 
+      second identifies the contributing watershed for specified locations.
+      <graphic border="0" width="213" depth="236" fileref="figures/image009.jpg" >
+      </graphic>
+      When delineating watersheds or defining 
+      stream networks, you proceed through a step process. Some steps are mandatory 
+      while others are optional depending on the characteristics of the input data. 
+      Flow across a surface will always be in the steepest downslope direction. Once 
+      the direction of flow out of each cell is known, it is possible to determine 
+      which and how many cells flow into any given cell. This information can be used 
+      to define watershed boundaries and stream networks. The following flowchart 
+      shows the process of extracting hydrologic information, such as watershed 
+      boundaries and stream networks, from a DEM.
+      <figure>
+        <title>                                                                 
+          Outline of steps to derive surface characteristics from a DEM         
+        </title>                                                                
+        <graphic border="0" width="605" depth="436" fileref="figures/image010.jpg" >
+        </graphic>
+      </figure>
+      
+      No matter what your goal is you start 
+      with an elevation model. From the elevation model you find out what cells flow 
+      into which cells, the flow direction. However, if there are errors in the 
+      elevation model or if you are modeling karst geology, there maybe some cell 
+      locations that are lower than all the surrounding cells. If this is the case, 
+      all water traveling into the cell will not travel out. These depressions are 
+      called sinks. The sample extension allows you to identify the sinks and gives 
+      you tool to fill them. The result is a depressionless elevation model. You then 
+      determine the flow direction on this depressionless elevation model.
+    </para>
+    <para>
+      If you are delineating watersheds, you 
+      then need to identify pour points, which are locations that you wish to know the 
+      contributing watershed for. Usually these locations are mouths of streams or 
+      some other hydrologic point of interest. In the sample extension, you can 
+      specify your pour points or you can use the stream network as the pour points. 
+      In the later case, to create the stream network you must first calculate the 
+      flow accumulation for each cell location (see below).
+    </para>
+    <para>
+      If you are defining stream networks you 
+      will not only need to know the direction water flows from cell to cell but also 
+      how much water flows through a cell, or how many cells flow into another cell. 
+      When enough water flows through a cell, then the location is considered to have 
+      a stream passing through it. 
+    </para>
+    <para>
+      The remaining text will describe each of 
+      the steps of analyzing your surface hydrology using the sample extension.
+    </para>
+  </section>
+  <section id='flowDirection'>
+    <title>
+      Flow direction
+    </title>
+    <para>
+      One of the keys to deriving hydrologic 
+      characteristics about a surface is the ability to determine the direction of 
+      flow from every cell in the grid. This is done with the Flow Direction dialog. 
+      To access the dialog click Flow Direction from the Hydrology dropdown menu.
+      <graphic border="0" width="348" depth="204" fileref="figures/image014.jpg" >
+      </graphic>
+      This dialog takes a surface as input and 
+      outputs a raster showing the direction of flow out of each cell. If Create drop 
+      is checked, an optional output raster is created showing a ratio of the maximum 
+      change in elevation from each cell along the direction of flow, to the path 
+      length between centers of cells, and is expressed in percents. If Force flow at 
+      edge is checked then all cells at the edge of the surface grid will flow outward 
+      from the surface grid.
+    </para>
+    <para>
+      There are eight valid output directions, 
+      relating to the eight adjacent cells into which flow could travel.
+      <graphic border="0" width="109" depth="92" fileref="figures/image016.gif" >
+      </graphic>
+      The direction of flow is determined by 
+      finding the direction of steepest descent, or maximum drop, from each cell. This 
+      is calculated as
+      <programlisting>
+        maximum drop = change in z value / distance
+      </programlisting>
+      The distance is determined between cell 
+      centers. Therefore if the cell size is 1, the distance between two orthogonal 
+      cells is 1 and the distance between two diagonal cells is 1.414216, the square 
+      root of 2. If the descent to all adjacent cells is the same, the neighborhood is 
+      enlarged until the steepest descent is found.
+    </para>
+    <para>
+      When a direction of steepest descent is 
+      found, the output cell is coded with the value representing that direction.
+      <graphic border="0" width="314" depth="159" fileref="figures/image017.jpg" >
+      </graphic>
+      If all neighbors are higher than the 
+      processing cell, the processing cell is a sink, and has an undefined flow 
+      direction. Cells with undefined flow direction can be flagged as sinks using the 
+      Identify Sinks dialog. To obtain an accurate representation of flow direction 
+      across a surface, the sinks should be filled. Refer to the section 
+      <link linkend='fill'>Creating a depressionless DEM</link>
+      for information on how to fill sinks.
+    </para>
+  </section>
+  <section id='fill'>
+    <title>
+      Creating a depressionless DEM
+    </title>
+    <section>
+      <title>
+        Identifying sinks
+      </title>
+      <para>
+        A DEM free of sinks, a <emphasis>depressionless 
+        DEM</emphasis>  , is the desired input to the flow direction process. The presence of 
+        sinks may result in an erroneous flow-direction grid. In some cases, there may 
+        be legitimate sinks in the data. It is important in this case to understand the 
+        morphology of the area to know what features may truly be sinks on the surface 
+        of the Earth and which are data errors.
+        <graphic border="0" width="349" depth="156" fileref="figures/image018.jpg" >
+        </graphic>
+        Sinks can be located using the Identify 
+        Sinks dialog. To access the dialog click Identify Sinks from the Hydrology 
+        dropdown menu. Enter a direction raster which is usually created by the 
+        <link linkend='flowDirection'>Flow direction dialog</link>. 
+        The result from the dialog is a raster that identifies sinks 
+        if there are any. Depending on the results, you may choose to fill the sinks and 
+        you might use the output to help determine the Fill limit. Sinks can be filled 
+        using the Fill Sinks dialog. To use the output from Identify Sinks to determine 
+        the Fill limit refer to 
+        <link linkend='sinkDepth'>Finding sink depth</link> 
+        later in this document.
+      </para>
+    </section>
+    <section>
+      <title>
+        Filling sinks
+      </title>
+      <para>
+        The Fill Sinks dialog uses a variety of 
+        functions including several of the hydrologic tools previously discussed earlier 
+        to create a depressionless DEM. When a sink is filled, it is filled to its pour 
+        point, the minimum elevation along its watershed boundary.
+        <graphic border="0" width="287" depth="140" fileref="figures/image020.jpg" >
+        </graphic>
+        The identification and removal of sinks, 
+        when trying to create a depressionless DEM is an iterative process. When a sink 
+        is filled, the boundaries of the filled area may create new sinks which then 
+        need to be filled. Following are the steps used internally to create a 
+        depressionless DEM. 
+      </para>
+      <orderedlist numeration="arabic">
+        <listitem>
+          <para>Determine flow direction using Flow Direction. </para>
+        </listitem>
+        <listitem>
+          <para> Find sinks using Identify Sinks. </para>
+        </listitem>
+        <listitem>
+          <para>
+            Find contributing area above each sink using Watershed.
+          </para>
+        </listitem>
+        <listitem>
+          <para>
+            Find depth of sinks. If within an acceptable limit proceed.
+          </para>
+        </listitem>
+        <listitem>
+          <para>
+            Fill sinks to the value of the lowest 
+            boundary cell in the watershed of each sink using the Spatial Analyst ZonalFill 
+            function.
+          </para>
+        </listitem>
+        <listitem>
+          <para>
+            Repeat from Step 1 until there are no 
+            more sinks found in Step 2, or there are no more sinks within the acceptable 
+            limit in Step 4. It will often require three iterations of this process to 
+            remove all sinks. This is because as areas are filled, new sinks are created in 
+            their borders.
+          </para>
+        </listitem>
+      </orderedlist>
+      <para>
+        The Fill Sinks dialog can be used to 
+        fill sinks. It is accessed from the Hydrology dropdown menu. The dialog requires 
+        an input surface, a fill limit, and an output raster. The result from Fill Sinks 
+        is a depressionless DEM.
+        <graphic border="0" width="317" depth="189" fileref="figures/image021.jpg" >
+        </graphic>
+      </para>
+    </section>
+    <section id='sinkDepth'>
+      <title>
+        Finding sink depth
+      </title>
+      <para>
+        It can be useful to know the depth of a 
+        sink or group of sinks. This information can be used to determine an appropriate 
+        Fill limit for the Fill Sinks dialog, to understand the type of errors present 
+        in the data, or decide whether some of the sinks are legitimate morphological 
+        features. A raster of sinks coded with depth can be created by first running the 
+        Identify Sinks dialog to locate sinks in the raster.
+      </para>
+      <para>
+        Then use the Watershed dialog to create 
+        a raster of the contributing area for each sink using the flow direction from 
+        the elevation raster and the output from the Identify Sinks dialog as input for 
+        pour points.
+      </para>
+      <para>
+        Using the Spatial Analyst Raster 
+        Calculator then create a raster of the minimum elevation in the watershed of 
+        each sink.
+        <programlisting>
+          sink_min = zonalmin (sink_areas, elevation)
+        </programlisting>
+        With the sink_areas being the output 
+        from the Watershed dialog.
+      </para>
+      <para>
+        Then create a raster containing the 
+        lowest elevation along the boundary of each watershed using the Raster 
+        Calculator.&nbsp; This corresponds to the elevation at which flow would leave the 
+        basin after filling to the rim.
+        <programlisting>
+          sink_max = zonalfill (sink_areas, elevation)
+        </programlisting>
+        Finally, subtract the minimum value from 
+        the maximum values to find the depth again with the Raster Calculator.
+        <programlisting>
+          sink_depth = sink_max - sink_min
+        </programlisting>
+      </para>
+    </section>
+  </section>
+  <section id='flowAccumulation'>
+    <title>
+      Flow Accumulation
+    </title>
+    <para>
+      The Flow Accumulation dialog calculates 
+      accumulated flow as the accumulated weight of all cells flowing into each 
+      downslope cell in the output raster. If no weight raster is provided, a weight 
+      of one is applied to each cell, and the value of cells in the output raster will 
+      be the number of cells that flow into each cell. Click Flow Accumulation on the 
+      Hydrology menu to access the dialog.
+      <graphic border="0" width="315" depth="187" fileref="figures/image022.jpg" >
+      </graphic>
+      Cells with a high flow accumulation are 
+      areas of concentrated flow and may be used to identify stream channels. This is 
+      discussed in a later section titled Stream networks
+      Cells with a flow accumulation of zero are local topographic highs and may be 
+      used to identify ridges.
+    </para>
+    <para>
+      An example of using a Weight raster in 
+      the Flow Accumulation dialog might determine how much rain has fallen within a 
+      given watershed. In such a case, the Weight raster may be a continuous raster 
+      representing average rainfall during a given storm.
+    </para>
+    <para>
+      The output from the Flow Accumulation 
+      dialog would then represent the amount of rain that would flow into each cell, 
+      assuming that all rain became runoff and there was no interception, 
+      evapotranspiration, or loss to groundwater. This could also be viewed as the 
+      amount of rain that fell on the surface, upslope from each cell.
+    </para>
+  </section>
+  <section>
+    <title>
+      Watershed delineation
+    </title>
+    <para>
+      A watershed is the up slope area 
+      contributing flow to a given location. The watershed is also referred to as a 
+      basin, catchment, subwatershed, or contributing area. A subwatershed is simply 
+      part of a hierarchy implying that a given watershed is part of a larger 
+      watershed. Watersheds can be delineated from a DEM by computing the flow 
+      direction and using it in the Watershed dialog. The Watershed dialog, accessed 
+      by clicking the Watershed on the Hydrology menu, uses a raster of flow direction 
+      to determine contributing area. Technology has come a long way from manually 
+      interpreting contours then edgematching all the pieces.
+      <graphic border="0" width="382" depth="372" fileref="figures/image023.jpg" >
+      </graphic>
+      The watershed can be delineated for 
+      junctions in a stream network or for individual pour points. The input to the 
+      Watershed dialog defining how the watersheds will be delineated is either by a 
+      flow accumulation threshold or pour points in a shapefile. When the threshold is 
+      used to define a watershed the pour points for the watershed will be the 
+      junctions of a stream network derived from flow accumulation.&nbsp; Therefore, a flow 
+      accumulation raster must be specified as well as the minimum number of cells 
+      that constitute a stream.
+    </para>
+    <para>
+      When a shapefile is used to define a 
+      watershed, the shapefile identifies the pour points (the cells above which to 
+      find the contributing area). A shapefile can be easily created using the 
+      Creating a Shapefile dialog which is accessed from the Watershed dialog.&nbsp; 
+      <graphic border="0" width="475" depth="301" fileref="figures/image024.jpg" >
+      </graphic>
+      An alternative for creating a watershed 
+      raster is to interactively identify the pour points and delineating the 
+      watershed using the Watershed tool on the sample extension tool bar. The process 
+      is described in the <link linkend='interactive'>Interactive Tools</link> section.
+      <graphic border="0" width="75" depth="44" fileref="figures/image026.gif" >
+      </graphic>
+    </para>
+  </section>
+  <section id='vectorizeRiver'>
+    <title>
+       Stream network 
+    </title>
+    
+    <section>
+      <title>
+        Delineating stream network
+      </title>
+      <para>
+        Stream networks can be delineated from a 
+        DEM using the flow accumulation output. Flow accumulation in its simplest form 
+        is the number of upslope cells that flow into each cell. By applying a threshold 
+        value to the results of Flow Accumulation using the Stream Networks As Feature 
+        dialog in the sample extension, a stream network can be delineated.
+      </para>
+      <para>
+        Click on Stream Network As Feature in 
+        the Hydrology dropdown menu to access the dialog. Identify the input flow 
+        direction and flow accumulation rasters. A threshold, i.e. the minimum number of 
+        cells that flow into a cell that constitute a stream is flowing through it must 
+        be specified. And the name of output stream feature dataset must be identified.
+        <graphic border="0" width="373" depth="214" fileref="figures/image029.png" >
+        </graphic>
+        The Stream Network As Feature dialog 
+        performs two steps, first, defines a stream network links within a raster and 
+        second, vectorizes the raster to create a feature dataset of lines.
+      </para>
+    </section>
+    <section>
+      <title>
+        Vectorizing stream network
+      </title>
+      <para>
+        The raster linear network is accurately 
+        converted to a shapefile as the second phase of the Stream Network As Feature 
+        dialog. The vectorization algorithm is designed primarily for vectorization of 
+        stream networks, or any other raster representing a raster linear network for 
+        which directionality is known. In the output shapefile, all arcs will point 
+        downstream.
+      </para>
+      <para>
+        The algorithm is optimized to use a 
+        direction raster to aid in vectorizing intersecting and adjacent cells. With the 
+        algorithm it is possible for two adjacent linear features of the same value to 
+        be vectorized as two parallel lines instead of being lumped into a single line 
+        as they would when using other vectorization methods.
+        <graphic border="0" width="407" depth="576" fileref="figures/image031.png" >
+        </graphic>
+      </para>
+    </section>
+  </section>
+  <section id='interactive'>
+    <title>
+      Interactive Tools
+    </title>
+    <para>
+      There are two 
+      interactive tools available in the Hydrology Modeling sample extension tool bar. 
+      These tools are called the Watershed and the Raindrop.
+      <graphic border="0" width="75" depth="44" fileref="figures/image026.gif" >
+      </graphic>
+      
+      The interactive 
+      properties must be set to make these two tools active. The direction and 
+      accumulation rasters and the snap option for the Watershed tool must be 
+      specified in the Properties dialog. The Properties dialog is accessed by 
+      clicking the Interactive properties on the Hydrology drop down menu. 
+      <graphic border="0" width="365" depth="183" fileref="figures/image037.png" >
+      </graphic>
+    </para>
+    <section>
+      <title id='raindrop'>
+        Raindrop tool
+      </title>
+      <para>
+        The Raindrop tool 
+        will trace how a water drop will travel through a landscape. To use the Raindrop 
+        tool, click the icon and then move the cursor onto the ArcMap display window and 
+        click on the desired. A line will appear defining the route the rain drop will 
+        take. It is desirable to display the elevation raster on which to place the rain 
+        drop. The following image shows two different drops being placed on the 
+        elevation raster. You can place as many drops on the surface you desire.
+        <graphic border="0" width="514" depth="386" fileref="figures/image039.png" >
+        </graphic>
+      </para>
+    </section>
+    <section id='watershedDelineation'>
+      <title>
+        Watershed tool
+      </title>
+      <para>
+        The Watershed tool will identify the 
+        contributing watershed to a specified point, known as a pour point. To use the 
+        tool, click on the Watershed tool and then click in ArcMap display to identify 
+        the pour. You can optionally set the snap option on the Interactive properties 
+        dialog. When checked, the selected pour point will be snapped to the cell of 
+        highest flow accumulation within a neighborhood. The neighborhood that the tool 
+        uses is 10 times the cell size. The image below displays the result of a 
+        watershed created using the watershed tool. The watershed is displayed in red. 
+        Multiple watersheds can be delineated for multiple pour points.
+      </para>
+      <para>
+        When selecting locations interactively, 
+        it can be helpful to draw the flow-accumulation raster in the background to 
+        ensure selection of major stream segments. Otherwise, it is possible to select a 
+        cell adjacent to the stream channel which could result in a much smaller than 
+        expected watershed.
+        <graphic border="0" width="514" depth="386" fileref="figures/image040.png" >
+        </graphic>
+      </para> 
+    </section>
+  </section>
+  <section>
+    <title>
+      References
+    </title>
+    <para>
+      For a more detailed discussion of 
+      material presented in this chapter, refer to the following publications:
+    </para>
+    <itemizedlist mark='opencircle'>
+      <listitem>                   
+        <para>
+        Spatial Analyst Functional Reference, <emphasis>ArcGIS Desktop Help.</emphasis>   ESRI.
+        </para> 
+      </listitem>
+      <listitem>
+        <para>
+        Jenson S. K. and J. O. Domingue. 1988. 
+        Extracting Topographic Structure from Digital Elevation Data for Geographic 
+        Information System Analysis, <emphasis>Photogrammetric Engineering and Remote Sensing</emphasis>  . 
+        Vol. 54, No. 11, November 1988, pp. 1593-1600.
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+        Mark, D. M. 1988. 'Network Models in 
+        Geomorphology', <emphasis>Modelling in Geomorphological Systems</emphasis>  . John Wiley.
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+        Shreve, R. L. 1966. Statistical Law of 
+        Stream Number, <emphasis>Journal of Geology</emphasis>  . Vol. 74, pp. 17-37.
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+        Strahler, A. N. 1957. Quantitative 
+        Analysis of Watershed Geomorphology. <emphasis>Transactions of the American Geophysical Union</emphasis>  . Vol. 8, 
+        Number 6, pp. 913-920.
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+        Tarboton, D. G., R. L. Bras, I. 
+        Rodriguez-Iturbe. 1991. On the Extraction of Channel Networks from Digital 
+        Elevation Data, <emphasis>Hydrological Processes</emphasis>  . Vol. 5, pp. 81-100.
+        </para>
+      </listitem>
+    </itemizedlist>
+  </section>
+</chapter>

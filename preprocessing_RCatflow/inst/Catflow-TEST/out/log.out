@@ -1,0 +1,177 @@
+  Oeffne Ausgabedatei   out/log.out                    (Unit: 35)
+  Oeffne Ausgabedatei   out/vg_tab.out                 (Unit: 36)
+  Oeffne Ausgabedatei   out/bilanz.csv                 (Unit: 37)
+  Oeffne Ausgabedatei   out/theta.out                  (Unit: 38)
+  Oeffne Ausgabedatei   out/psi.out                    (Unit: 39)
+  Oeffne Ausgabedatei   out/psi.fin                    (Unit: 40)
+  Oeffne Ausgabedatei   out/fl_xsi.out                 (Unit: 41)
+  Oeffne Ausgabedatei   out/fl_eta.out                 (Unit: 42)
+  Oeffne Ausgabedatei   out/senken.out                 (Unit: 43)
+  Oeffne Ausgabedatei   out/qoben.out                  (Unit: 44)
+  Oeffne Ausgabedatei   out/evapo.out                  (Unit: 45)
+  Oeffne Ausgabedatei   out/gang.out                   (Unit: 46)
+  Oeffne Ausgabedatei   out/ve.out                     (Unit: 47)
+  Oeffne Ausgabedatei   out/vx.out                     (Unit: 48)
+  Oeffne Ausgabedatei   out/c.out                      (Unit: 49)
+  Oeffne Ausgabedatei   out/hko.out                    (Unit: 50)
+  Oeffne Ausgabedatei   out/sko.out                    (Unit: 51)
+  Oeffne Ausgabedatei   out/relsat.out                 (Unit: 52)
+  Oeffne Eingabedatei   in/soils.def                   (Unit: 54)
+  Oeffne Eingabedatei   in/timeser.def                 (Unit: 55)
+  Oeffne Eingabedatei   in/landuse/lu_file.def         (Unit: 56)
+  Oeffne Eingabedatei   in/winddir.def                 (Unit: 57)
+  Start: 01.01.2004 00:00:00.00
+  Ende:  03.01.2004 00:00:00      d.h.          172800. [s]
+ t_off      0.000000000000000E+000
+ dtbach      1200.00000000000     
+ qtol       1.000000000000000E-006
+ dt_max      1200.00000000000     
+ dt_min     1.000000000000000E-003
+ dt_s        30.0000000000000     
+ d_Th_opt   3.000000000000000E-003
+ d_Phi_opt  1.000000000000000E-003
+ n_gr                3
+ it_max             10
+ piceps     5.000000000000000E-004
+ cgeps      5.000000000000000E-007
+  Oeffne Eingabedatei   in/TEST.rain.dat               (Unit: 66)
+  Oeffne Eingabedatei   in/landuse/lu_ts.dat           (Unit: 29)
+  Oeffne Eingabedatei   in/TEST.clima.dat              (Unit: 62)
+  Oeffne Eingabedatei        in/landuse/conif.par      (Unit: 28)
+  Oeffne Eingabedatei   in/test.geo                    (Unit: 21)
+  Oeffne Eingabedatei   in/soils.bod                   (Unit: 22)
+  Oeffne Eingabedatei   in/ksmult.dat                  (Unit: 32)
+  Oeffne Eingabedatei   in/thsmult.dat                 (Unit: 33)
+  Oeffne Eingabedatei   in/profil.mak                  (Unit: 30)
+  Oeffne Eingabedatei   in/cont_vol.cv                 (Unit: 31)
+  Oeffne Ausgabedatei   in/test.bna                    (Unit: 26)
+  Oeffne Eingabedatei   in/soilhyd.ini                 (Unit: 23)
+  Oeffne Eingabedatei   in/printout.prt                (Unit: 25)
+  Oeffne Eingabedatei   in/surface.pob                 (Unit: 15)
+  Oeffne Eingabedatei   in/boundary.rb                 (Unit: 27)
+  Oeffne Eingabedatei   in/landuse/lu_set1.dat         (Unit: 15)
+
+Daten einlesen:          1.0 sec
+
+Berechnungsmethode:      pic
+-------------------------------------------------------------------------
+ Zeitpunkt       0.0208: Klimadaten       10 fehlen
+Genauigkeit nicht erreicht: Hang   1, Zeit   0.02 Tage, rsq, rel_ab   0.3430E-03  0.1660E+02
+ abbruch= T
+Genauigkeit nicht erreicht: Hang   1, Zeit   0.02 Tage, rsq, rel_ab   0.1041E-03  0.1000E+04
+ abbruch= T
+Genauigkeit nicht erreicht: Hang   1, Zeit   0.02 Tage, rsq, rel_ab   0.4691E-04  0.1000E+04
+ abbruch= T
+Genauigkeit nicht erreicht: Hang   1, Zeit   0.02 Tage, rsq, rel_ab   0.1410E-04  0.1000E+04
+ abbruch= T
+Genauigkeit nicht erreicht: Hang   1, Zeit   0.02 Tage, rsq, rel_ab   0.6345E-05  0.1000E+04
+ abbruch= T
+Genauigkeit nicht erreicht: Hang   1, Zeit   0.02 Tage, rsq, rel_ab   0.1904E-05  0.1000E+04
+ abbruch= T
+Genauigkeit nicht erreicht: Hang   1, Zeit   0.02 Tage, rsq, rel_ab   0.8568E-06  0.1000E+04
+ abbruch= T
+Genauigkeit nicht erreicht: Hang   1, Zeit   0.02 Tage, rsq, rel_ab   0.2570E-06  0.1000E+04
+ abbruch= T
+Genauigkeit nicht erreicht: Hang   1, Zeit   0.02 Tage, rsq, rel_ab   0.7712E-07  0.1000E+04
+ abbruch= T
+Genauigkeit nicht erreicht: Hang   1, Zeit   0.02 Tage, rsq, rel_ab   0.3470E-07  0.1000E+04
+ abbruch= T
+Genauigkeit nicht erreicht: Hang   1, Zeit   0.02 Tage, rsq, rel_ab   0.1041E-07  0.1000E+04
+ abbruch= T
+Genauigkeit nicht erreicht: Hang   1, Zeit   0.02 Tage, rsq, rel_ab   0.4685E-08  0.1000E+04
+ abbruch= T
+Genauigkeit nicht erreicht: Hang   1, Zeit   0.02 Tage, rsq   0.1771E-08
+ Zeitpunkt       0.0417: Klimadaten       10 fehlen
+ Zeitpunkt       0.0625: Klimadaten       10 fehlen
+ Zeitpunkt       0.0833: Klimadaten       10 fehlen
+ Zeitpunkt       0.1042: Klimadaten       10 fehlen
+ Zeitpunkt       0.1250: Klimadaten       10 fehlen
+ Zeitpunkt       0.1458: Klimadaten       10 fehlen
+ Zeitpunkt       0.1667: Klimadaten       10 fehlen
+ Zeitpunkt       0.1875: Klimadaten       10 fehlen
+ Zeitpunkt       0.2083: Klimadaten       10 fehlen
+ Zeitpunkt       0.2292: Klimadaten       10 fehlen
+ Zeitpunkt       0.2500: Klimadaten       10 fehlen
+ Zeitpunkt       0.2708: Klimadaten       10 fehlen
+ Zeitpunkt       0.2917: Klimadaten       10 fehlen
+ Zeitpunkt       0.3125: Klimadaten       10 fehlen
+ Zeitpunkt       0.3333: Klimadaten       10 fehlen
+ Zeitpunkt       0.3542: Klimadaten       10 fehlen
+ Zeitpunkt       0.3750: Klimadaten       10 fehlen
+ Zeitpunkt       0.3958: Klimadaten       10 fehlen
+ Zeitpunkt       0.4167: Klimadaten       10 fehlen
+ Zeitpunkt       0.4375: Klimadaten       10 fehlen
+ Zeitpunkt       0.4583: Klimadaten       10 fehlen
+ Zeitpunkt       0.4792: Klimadaten       10 fehlen
+ Zeitpunkt       0.5000: Klimadaten       10 fehlen
+ Zeitpunkt       0.5208: Klimadaten       10 fehlen
+ Zeitpunkt       0.5417: Klimadaten       10 fehlen
+ Zeitpunkt       0.5625: Klimadaten       10 fehlen
+ Zeitpunkt       0.5833: Klimadaten       10 fehlen
+ Zeitpunkt       0.6042: Klimadaten       10 fehlen
+ Zeitpunkt       0.6250: Klimadaten       10 fehlen
+ Zeitpunkt       0.6458: Klimadaten       10 fehlen
+ Zeitpunkt       0.6667: Klimadaten       10 fehlen
+ Zeitpunkt       0.6875: Klimadaten       10 fehlen
+ Zeitpunkt       0.7083: Klimadaten       10 fehlen
+ Zeitpunkt       0.7292: Klimadaten       10 fehlen
+ Zeitpunkt       0.7500: Klimadaten       10 fehlen
+ Zeitpunkt       0.7708: Klimadaten       10 fehlen
+ Zeitpunkt       0.7917: Klimadaten       10 fehlen
+ Zeitpunkt       0.8125: Klimadaten       10 fehlen
+ Zeitpunkt       0.8333: Klimadaten       10 fehlen
+ Zeitpunkt       0.8542: Klimadaten       10 fehlen
+ Zeitpunkt       0.8750: Klimadaten       10 fehlen
+ Zeitpunkt       0.8958: Klimadaten       10 fehlen
+ Zeitpunkt       0.9167: Klimadaten       10 fehlen
+ Zeitpunkt       0.9375: Klimadaten       10 fehlen
+ Zeitpunkt       0.9583: Klimadaten       10 fehlen
+ Zeitpunkt       0.9792: Klimadaten       10 fehlen
+ Zeitpunkt       1.0000: Klimadaten       10 fehlen
+ Zeitpunkt       1.0208: Klimadaten       10 fehlen
+ Zeitpunkt       1.0417: Klimadaten       10 fehlen
+ Zeitpunkt       1.0625: Klimadaten       10 fehlen
+ Zeitpunkt       1.0833: Klimadaten       10 fehlen
+ Zeitpunkt       1.1042: Klimadaten       10 fehlen
+ Zeitpunkt       1.1250: Klimadaten       10 fehlen
+ Zeitpunkt       1.1458: Klimadaten       10 fehlen
+ Zeitpunkt       1.1667: Klimadaten       10 fehlen
+ Zeitpunkt       1.1875: Klimadaten       10 fehlen
+ Zeitpunkt       1.2083: Klimadaten       10 fehlen
+ Zeitpunkt       1.2292: Klimadaten       10 fehlen
+ Zeitpunkt       1.2500: Klimadaten       10 fehlen
+ Zeitpunkt       1.2708: Klimadaten       10 fehlen
+ Zeitpunkt       1.2917: Klimadaten       10 fehlen
+ Zeitpunkt       1.3125: Klimadaten       10 fehlen
+ Zeitpunkt       1.3333: Klimadaten       10 fehlen
+ Zeitpunkt       1.3542: Klimadaten       10 fehlen
+ Zeitpunkt       1.3750: Klimadaten       10 fehlen
+ Zeitpunkt       1.3958: Klimadaten       10 fehlen
+ Zeitpunkt       1.4167: Klimadaten       10 fehlen
+ Zeitpunkt       1.4375: Klimadaten       10 fehlen
+ Zeitpunkt       1.4583: Klimadaten       10 fehlen
+ Zeitpunkt       1.4792: Klimadaten       10 fehlen
+ Zeitpunkt       1.5000: Klimadaten       10 fehlen
+ Zeitpunkt       1.5208: Klimadaten       10 fehlen
+ Zeitpunkt       1.5417: Klimadaten       10 fehlen
+ Zeitpunkt       1.5625: Klimadaten       10 fehlen
+ Zeitpunkt       1.5833: Klimadaten       10 fehlen
+ Zeitpunkt       1.6042: Klimadaten       10 fehlen
+ Zeitpunkt       1.6250: Klimadaten       10 fehlen
+ Zeitpunkt       1.6458: Klimadaten       10 fehlen
+ Zeitpunkt       1.6667: Klimadaten       10 fehlen
+ Zeitpunkt       1.6875: Klimadaten       10 fehlen
+ Zeitpunkt       1.7083: Klimadaten       10 fehlen
+ Zeitpunkt       1.7292: Klimadaten       10 fehlen
+ Zeitpunkt       1.7500: Klimadaten       10 fehlen
+ Zeitpunkt       1.7708: Klimadaten       10 fehlen
+ Zeitpunkt       1.7917: Klimadaten       10 fehlen
+ Zeitpunkt       1.8125: Klimadaten       10 fehlen
+ Zeitpunkt       1.8333: Klimadaten       10 fehlen
+ Zeitpunkt       1.8542: Klimadaten       10 fehlen
+ Zeitpunkt       1.8750: Klimadaten       10 fehlen
+ Zeitpunkt       1.8958: Klimadaten       10 fehlen
+ Zeitpunkt       1.9167: Klimadaten       10 fehlen
+ Zeitpunkt       1.9375: Klimadaten       10 fehlen
+ Zeitpunkt       1.9583: Klimadaten       10 fehlen
+ Zeitpunkt       1.9792: Klimadaten       10 fehlen

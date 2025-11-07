@@ -1,0 +1,5 @@
+Im Verzeichnis, wo die Inputdatei plus catflow2ts.awk sich befindet, wird folgender Befehl ausgeführt:
+
+
+C:\Programme\GnuWin32\bin\gawk.exe -f catflow2ts.awk InputDatei > neueDatei
+

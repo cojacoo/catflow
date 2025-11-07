@@ -1,0 +1,6 @@
+1               % columnnumber to be read; specifications for landuse.def
+11  1           % weizen.par
+22  2           % mais.par
+33  3           % gruen.par
+44  4           % laubwald.par
+55  5           % Rüben.par 

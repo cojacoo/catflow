@@ -1,0 +1,7 @@
+2012-05-12 17:25:00     86400.0
+# referenz zeit          [s] in [s]
+# zeit    irtyp  [rbpar1  [rbpar2]]   rbpar3     rbpar4  rbpar5
+#   s              m         m/s     kg/m^3     kg/m^3    kg/m^3
+0.      3   
+1.      -1   -0.2
+800      -1   -0.2

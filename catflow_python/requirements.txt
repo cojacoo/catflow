@@ -1,0 +1,8 @@
+# Core dependencies for CATFLOW Python
+numpy>=1.20.0
+scipy>=1.7.0
+matplotlib>=3.3.0
+
+# Optional dependencies
+# pyvista>=0.30  # For VTK export and 3D visualization
+# pytest>=6.0    # For running tests

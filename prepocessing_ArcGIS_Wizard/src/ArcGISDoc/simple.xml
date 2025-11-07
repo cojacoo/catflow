@@ -1,0 +1,54 @@
+<?xml version="1.0"?> 
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
+       "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd" 
+       [ <!ENTITY wizard SYSTEM "wizard.xml"> 
+         <!ENTITY steps SYSTEM "stepWise.xml"> 
+         <!ENTITY hydrology SYSTEM "hydrology.xml">
+         <!ENTITY intro SYSTEM "start.xml"> 
+         <!ENTITY refs SYSTEM "refs.xml">
+         <!ENTITY fdl SYSTEM "fdl.xml">
+         <!ENTITY gpl SYSTEM "gpl.xml">
+       ]
+>
+
+<book> 
+ 
+  <bookinfo> 
+    <legalnotice> 
+      <para> This documentation is distributed under the <link linkend="gfdl">GNU Free Documentation License Version 1.2</link> </para> 
+      <para> Excluded are the following sections which are copies from existing documents without
+             defined copying conditions: 
+             <itemizedlist>
+		<listitem><para> <xref linkend='catflowIntro'/></para></listitem>
+		<listitem><para> <xref linkend='hydrologyExtension'/></para></listitem>
+             </itemizedlist>
+      </para>
+    </legalnotice>
+    <author> 
+      <firstname>Dominik</firstname> 
+      <surname>Reusser</surname> 
+    </author> 
+    <copyright> 
+      <year>2004</year> 
+      <holder>Dominik Reusser</holder> 
+    </copyright>
+  </bookinfo>
+  <title>Documentation to the CATFLOW wizard</title> 
+  <titleabbrev>Catflow Wizard</titleabbrev> 
+  <preface>
+    <title>Introduction</title> 
+    <para>
+      With this documentation you should be able to
+      use the catflow wizard successfully for creation
+      of important input files for the catflow model.
+    </para> 
+  </preface> 
+  &intro;
+  &wizard; 
+  &hydrology;
+  &steps; 
+  &fdl;
+  &gpl;
+  &refs;
+  <index id="index"/> 
+</book>

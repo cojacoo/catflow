@@ -1,0 +1,18 @@
+citHeader("To cite the Catflow R package use:")
+
+citEntry(entry="Manual",
+         title = "Catflow: Utilities for pre- and postprocessing for the hydrological model CATFLOW",
+         author = person(last="Wienhöfer", first="Jan"),
+         organization = "Karlsruhe Institute of Technology",
+         address      = "Karlsruhe, Germany",
+         year         = version$year,
+         url          = "http://www.experimental-hydrology.net/models/index.php?title=Catflow_-_SVN_repository",
+         
+   textVersion = 
+   paste("Wienhöfer, J. (", version$year, "). ", 
+       "Catflow: Utilities for pre- and postprocessing for the hydrological model CATFLOW. ",
+       "Karlsruhe Institute of Technology; Karlsruhe, Germany. ",
+       "http://www.experimental-hydrology.net/models/index.php?title=Catflow_-_SVN_repository. ",
+         sep="")
+         )
+

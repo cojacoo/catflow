@@ -1,0 +1,1529 @@
+<chapter>
+  <title>
+    The catflow wizard
+  </title>
+  <section>
+    <title>
+      Installation
+    </title>
+    <para> 
+      Put the template (catflow.mxt) and helpfile
+      (catflow.chm) into your ArcGIS template directory
+      (C:\arcgis\arcexe83\bin\Templates).
+    </para>
+    <para>
+      If the directory differs, you'll need to adjust the path (public const helpfile)
+      in the module CatflowUtil.
+      To do this, start ArcMap with the catflow template.
+      Go into the Visual Basic Editor 
+      (<command>Extras:Macro:Visual Basic Editor...</command>) and
+      in the project frame open (<command>Modles:CatflowUtil</command>)
+      where you can edit the corresponding path.
+      <graphic fileref="figures/path.png"/>
+    </para>
+    <para>
+      Copy the matlabScript folder to where you would like to run the matlab routines.
+    </para>
+  </section>
+  <section>
+    <title>
+      Starting the  wizard
+    </title>
+    <para> 
+      In ArcMap, create a new file from the catflow template
+      (<command>File:New...</command>). Select the catflow
+      template from the register called general. 
+      <graphic fileref="figures/newFile.png"/>
+      To start the wizard, click on the catflow toolbar.
+      <graphic fileref="figures/catflowTool.png"/>
+    </para>
+  </section>
+  <section>
+    <title>
+      Users guide
+    </title>
+    <section>
+      <title>
+        Step 1: Introduction
+      </title>
+      <para>
+        In the first step of the wizard, make sure the four
+        <emphasis>shape</emphasis> files (the wizard does not work with coverages) as
+        described in <xref linkend='prerequisites'/> are available:
+        <orderedlist numeration="arabic">
+          <listitem>
+            <para><link linkend='creatingDEM'>Digital Elevation Model </link></para>
+          </listitem>
+          <listitem>
+            <para><link linkend='CreatingRiverNetwork'>Vectorized river network</link></para>
+          </listitem>
+          <listitem>
+            <para><link linkend='creatingSlopePoly'>Slope delineation</link></para>
+          </listitem>
+          <listitem>
+            <para><link linkend='creatingSlopeLine'>Vectorized slope lines</link></para>
+          </listitem>
+        </orderedlist>
+      </para>
+      <figure id='step1'>
+        <title>
+           Catflow Wizard Step 1: Introduction
+        </title>
+        <graphic fileref="figures/step1.png"/>
+      </figure>
+    </section>
+    <section>
+      <title>
+        Step 2: Rivernet file
+      </title>
+      <para>
+        In the second step you need to define the layer containing
+        your <link linkend='CreatingRiverNetwork'>vectorized river network</link>.
+        In <xref linkend="step2"/>, the layer is called riverNetWithAttrib. Two additional
+        parameters for the river network are  set during this step. The 
+        <emphasis>first</emphasis> is the
+        default rivernet split length in meters. In the example, it is set to 20m. This 
+        defines at what interval river network points are created. These are then passed
+        on to Catflow in a parameter file.
+        The <emphasis>second</emphasis> parameter defines an attribute in the layer
+        for specific split lengths. The attributes only define the river network point
+        interval for a single river segment. If the entry in the attribute for a 
+        certain river stretch is negative, the default value (first parameter) is
+        used instead.
+      </para>
+      <example id='parameterPriority'>
+        <title>
+           Example clarifying what the priority of parameters is
+        </title>
+        <para>
+          While the following example describes priorities for the parameter 
+          <emphasis>river network split length</emphasis> equivalent
+          priorities are used for all different parameters.
+        </para>
+        <para>
+           Let's assume your river network consists of three river segments with
+           IDs 1,2, and 3. The specific rivernet split length attribute is set
+           to <emphasis>SplitLength</emphasis> and the attribute table looks as follows:
+           <table frame="all" > 
+             <tgroup cols="2" align="left" colsep="1" rowsep="1"> 
+               <thead>
+                 <row> 
+                   <entry>ID</entry> 
+                   <entry>SplitLenght</entry>
+                 </row>
+               </thead>
+               <tbody> 
+                 <row> 
+                   <entry>1</entry>
+                   <entry>-1</entry>
+                 </row> 
+                 <row> 
+                   <entry>2</entry>
+                   <entry>-1</entry>
+                 </row> 
+                 <row> 
+                   <entry>3</entry>
+                   <entry>40</entry>
+                 </row> 
+               </tbody> 
+             </tgroup> 
+           </table> 
+           Moreover, your default split length is set to 20m. With these 
+           settings the split length is
+           20m for the river segements with ID 1 and 2 and it is 40m for the river
+           segement with ID 3.
+        </para>
+      </example>
+      <para>
+        During step 2, also the layers with the 
+        <link linkend='creatingDEM'>digital elevation model</link> (grid) and the
+        rain station IDs (grid or polygon) need to be defined. 
+        Usually, the digital elevation model has only one attribute, otherwise the 
+        correct attribute (raster band) needs to be selected.
+        The definition of the polygon theme with 
+        rain station IDs is optional. If a theme is defined, the rain station ID of a
+        certain polygon will
+        be assigned to the all rivernet points within this polygon. 
+        If a rivernet point does not fall within any polygon, a default ID (0) will be
+        assigned.
+        The information will then
+        be passed on to Catflow. 
+      </para>
+      <para>
+        If your river network theme contains the same line multiple times, you may
+        get an error "more than one Outflow detected" while only one point shows up
+        on the screen.
+      </para>
+      <figure id='step2'>
+        <title>
+          Catflow Wizard Step 2: Rivernet file
+        </title>
+        <graphic fileref="figures/step2.png"/>
+      </figure>
+      
+    </section>
+    <section id='riverParameterDefinition'>
+      <title>
+        Step 3: Rivernet parameters
+      </title>
+      <para>
+      During the third step, all other rivernet parameters are defined. Since parameters
+      for the river network are likely to differ with river size, default values for 
+      these parameters can be defined depending on the strahler order 
+      (<xref linkend='strahlerOrder'/>). Besides the order-dependend default values,
+      all parameters can
+      also be assigned to river stretches with attributes. As described in 
+      <xref linkend="parameterPriority"/>, values in attribute fields are used
+      If they are not negative. Non-negative values in attribute fields have higher
+      priority than default values. 
+      </para>
+      <variablelist>
+        <title>River network parameters depending on strahler order</title>
+        <varlistentry><term>Critical Rainfall</term>
+          <listitem>
+            <para>
+              The critical rainfall m/s is used to estimate the river stretch geometry as
+              described by <xref linkend="Maurer"/> p64
+            </para>
+          </listitem>
+        </varlistentry>
+        <varlistentry><term>River width to depth ratio</term>
+          <listitem>
+            <para>
+              The width to depth ratio is an imporant parameter describing the
+              river geometry. The width corresponds to the width of the river bed and
+              the depth corresponds to the depth of the river for a flow corresponding
+              to the critical rainfall.
+              Used for calculations as described by <xref linkend="Maurer"/> p64.
+            </para>
+          </listitem>
+        </varlistentry>
+        <varlistentry><term>Strickler roughness</term>
+          <listitem>
+            <para>
+              Required to calculate the "Durchflussvermoegen"(<xref linkend="Maurer"/> p84). Unfortunately 
+              <xref linkend="catflowdoku"/> does not define the units.
+              Is it the same as the Strickler-Beiwert as defined by 
+              <xref linkend="Maurer"/> p84 with units m<superscript>1/3</superscript>/s
+              Called <command>b_rauh</command> in <xref linkend="catflowdoku"/> p.32
+            </para>
+          </listitem>
+        </varlistentry>
+        <varlistentry><term>Channel bank slope</term>
+          <listitem>
+            <para>
+              The channel bank slope 1/m defines the geometry of the channel bank.
+              The bank rises 1m on a distance of m meters. 
+              Called <command>b_m</command> in <xref linkend="catflowdoku"/> p.32
+            </para>
+          </listitem>
+        </varlistentry>
+        <varlistentry><term>Sealed surface width</term>
+          <listitem>
+            <para>
+              Roads are often situated right next to the river. Water from these
+              sealed surfaces reaches the river very fast. This parameter allows
+              you to define the width of an area for which all of the rain reaches
+              the river immediately <xref linkend="Maurer"/> p84.
+              Called <command>weg_br</command> in <xref linkend="catflowdoku"/> p.32
+            </para>
+          </listitem>
+        </varlistentry>
+        <varlistentry><term>Are sealed surfaces connected to the river?</term>
+          <listitem>
+            <para>
+              See above. Called <command>inarea</command> in <xref linkend="catflowdoku"/> p.32
+            </para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+      <figure id='step3'>
+        <title>
+          Catflow Wizard Step 3: Rivernet parameters
+        </title>
+        <graphic fileref="figures/step3.png"/>
+      </figure>
+      
+    </section>
+    <section>
+      <para>
+        In the fourth step, layers defining the 
+        <link linkend='creatingSlopePoly'>slope delineation</link> and the
+        <link linkend='creatingSlopeLine'>vectorized slope lines</link> are selected.
+        In order to relate corresponding pairs of slope lines and polygons, both
+        layers need unique IDs.  
+      </para>
+      <para>
+        Step 5 can only be reached if a slope line exists for each polygon with the
+        same ID. Note that slopes can not be processed if the slope line is not completely
+        within the polygon theme. A warning will be issued if the slope line extends the
+        corresponding polygon.
+      </para>
+      <para>
+        If the slope line goes crosses your river, an error ("object variable or
+        with block variable not set") may occur. This will be corrected
+      </para>
+      <title>
+        Step 4: Slope files
+      </title>
+      <figure id='step4'>
+        <title>
+          Catflow Wizard Step 4: Slope files
+        </title>
+        <graphic fileref="figures/step4.png"/>
+      </figure>
+      
+    </section>
+    <section>
+      <title>
+        Step 5: Slope parameters
+      </title>
+      <para>
+        Step five allows to specify parameters for the two dimensional representation
+        of the slopes. A two-dimensional grid based on curvlinear orthogonal coordinates
+        is used. This has advantages for the numerical solution as
+        described by <xref linkend='Maurer'/> p. 62 as well as flexible representation of
+        the irregular boundery. The preprocessing allows to choose 
+        between two different representations of the slope. In the first case, all horizontal
+        lines are parallel to the slope surface (constant thickness). In the second case,
+        the bottom line is straight (cake shape).
+        <figure id='slopeShape'>
+          <title>
+            "Cake-shaped" slope and slope with parallel lines (Source: <xref linkend='Maurer'/> Abb. 4.3, 4.4)
+          </title>
+          <graphic width="15cm" fileref="figures/cake.png"/>
+          <graphic width="15cm" fileref="figures/parallel.png"/>
+        </figure>
+      </para>
+      <para>
+        The thickness (extension along the z-coordinate) is defined at the bottom of the slope.
+        The slope split length defines the spacing of points passed to the
+        algorithm.
+      </para>
+      <para>
+        This algorithm is implemented in MATLAB making use of boundary
+        descriptions by cubic splines. It allows to pass nothing than an arbitrary number 
+        of boundary points (in cartesian coordinates) to the algorithm instead of 
+        a mathematical description (<xref linkend='catflowdoku'/> p.54).
+      </para>
+      <para> 
+        Therefore it is best to define the split length a little larger than the
+        horizontal resolution of the DEM. This way a maximum amount of information
+        is passed to the algorithm while not introducing artefacts by repeated, equivalent
+        altitudes (same DEM-cell).
+      </para>
+      <para>
+        As before, parameters can be defined as default as well as slope
+        specific values in an attribute. Again, non-negative attributes
+        override the default values.
+      </para>
+      <figure id='step5'>
+        <title>
+          Catflow Wizard Step 5: Slope parameters
+        </title>
+        <graphic fileref="figures/step5.png"/>
+      </figure>
+      
+    </section>
+    <section>
+      <para>
+        The density of discretisation can be varied within the
+        slope. It should be highest in 
+        areas expected to be hydrologically most active. 
+        The density is defined in terms of &eegr; and &xgr;, the
+        curvlinear orthogonal coordinates.
+      </para>
+      <para>
+        Use the text fields to edit the list of coordinates. 
+        The list boxes show the parsed
+        lists of coordinate points. &eegr; defines
+        the horizontal coordinate with the maximum value corresponding to
+        the bottom of the slope. &xgr; is the vertical coordinate with the maximum value
+        representing the surface of the slope. 
+      </para>
+      <title>
+        Step 6: Slope coordinates
+      </title>
+      <figure id='step6'>
+        <title>
+          Catflow Wizard Step 6: Slope coordinates
+        </title>
+        <graphic fileref="figures/step6.png"/>
+      </figure>
+      
+    </section>
+    <section>
+      <title>
+        Step 7: Finish
+      </title>
+      <para>
+        At this point, the wizard has all the information to
+        produce two relevant output files. The first file, defined in
+        the file dialog "Save Catflow rivernet data", can directly be
+        used in Catflow as the river network geometry.
+        The file format is described in 
+        <xref linkend='catflowdoku'/> p.31.
+      </para>
+      <para>
+        An error message (Iteration for depth is not stable after 500
+        steps. Using values as they are now. Check whether they 
+        are useful.) may occur during this last step. The wizard
+        writes the files correctly. However, you should check whether
+        river depths are meaningful values.
+      </para>
+      <para>
+        The second file, defined in the file dialog "Save slope data
+        for Matlab preprocessing" needs to be 
+        <link linkend='matlabPrep'>processed by a Matlab program</link> and
+        will result in the hill slope geometries as described in
+        <xref linkend='catflowdoku'/> p.34.
+      </para>
+      <figure id='step7'>
+        <title>
+          Catflow Wizard Step 7: Finish
+        </title>
+        <graphic fileref="figures/step7.png"/>
+      </figure>
+      
+    </section>
+  </section>
+  <section id='matlabPrep'>
+    <title>
+      Matlab part of the preprocessing
+    </title>
+    <para>
+      Only one command needs to be executed in matlab. To do this, start matlab,
+      change to your working directory (which contains h_spl.m and the other .m files) and
+      type <command>run h_spl</command>.
+    </para>
+    <graphic fileref="figures/matlab1.png"/>
+    <para>
+      A file dialog will open  and allow you to select the data file created by the
+      Catflow Wizard. The structure of the file is shown below.
+    </para>
+    <graphic fileref="figures/matlab2.png"/>
+    <variablelist>
+        <title>Structure of the slope data file created by the catflow wizard</title>
+        <varlistentry><term>First line</term>
+          <listitem>
+            <para>
+              numberOfSlopes (n), maxNumberOfSlopePoints (m), x_reference, y_reference, z_reference, number of &xgr; (i), number of &eegr; (j)
+            </para>
+          </listitem>
+        </varlistentry>
+        <varlistentry><term>line 2</term>
+          <listitem>
+            <para>
+              n columns with the slope IDs
+            </para>
+          </listitem>
+        </varlistentry>
+        <varlistentry><term>line 3</term>
+          <listitem>
+            <para>
+               n columns with the slope type (constant thickness (1) or 'Cake shape'(2))
+            </para>
+          </listitem>
+        </varlistentry>
+        <varlistentry><term>line 4 </term>
+          <listitem>
+            <para>
+              n columns with the slope area
+            </para>
+          </listitem>
+        </varlistentry>
+        <varlistentry><term>line 5</term>
+          <listitem>
+            <para>
+              n columns with the number of points defining the slope surface
+            </para>
+          </listitem>
+        </varlistentry>
+        <varlistentry><term>line 6</term>
+          <listitem>
+            <para>
+              n columns with the thickness for each slope
+            </para>
+          </listitem>
+        </varlistentry>
+        <varlistentry><term>line 7 </term>
+          <listitem>
+            <para>
+              j columns with the &eegr;-coordinates
+            </para>
+          </listitem>
+        </varlistentry>
+        <varlistentry><term>line 8</term>
+          <listitem>
+            <para>
+               i columns with the &xgr;-coordinates
+            </para>
+          </listitem>
+        </varlistentry>
+        <varlistentry><term>line 9...8+n</term>
+          <listitem>
+            <para>
+               m columns with x values for each slopepoint
+            </para>
+          </listitem>
+        </varlistentry>
+        <varlistentry><term>line 9+n...8+2n </term>
+          <listitem>
+            <para>
+              m columns with y values for each slopepoint
+            </para>
+          </listitem>
+        </varlistentry>
+        <varlistentry><term>line 9+2n...8+3n</term>
+          <listitem>
+            <para>
+               m columns with z values for each slopepoint
+            </para>
+          </listitem>
+        </varlistentry>
+        <varlistentry><term>line 9+3n...8+4n</term>
+          <listitem>
+            <para>
+               m columns with width values for each slopepoint
+            </para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+    <para>
+      After selecting the file, matlab will process each slope, generate 
+      a graph showing the slope profile and output the corresponding
+      hillslope geometry (*.geo files) as defined in <xref linkend='catflowdoku'/> p.34.
+    </para>
+    <graphic fileref="figures/matlab3.png"/>
+  </section> 
+  <section>
+    <title>
+      Program documentation
+    </title>
+    <para>
+      In order to understand the program documentation, you should be
+      familiar with object oriented programming. First, an overview of
+      the classes is given, then the classes are discussed in more
+      detail. For documentation of ArcGIS-Standard classes, see the
+      ArcGIS Deveoloper Help system distributed with ArcGIS.
+    </para>
+       The Catflow Wizard is free software; you can redistribute it and/or
+       modify it under the terms of the <xref linkend="gpl"/>.
+    <para>
+    </para>
+    <!--
+    <para>
+      Still to test or do:
+      What happens if rivernet extends DEM? (Maybe cutting the rivernet using the hillslope polygons?).
+      Change direction of slope lines if necessary.
+      Test again what happens if slope line crosses the river. (Thomas saw object var or with block var not set..)      
+    </para>
+    -->
+    <section>
+      <title>
+        Class overview
+      </title>
+      
+      <para>
+        The wizard includes one form file and five classes. The form
+	file provides the user interface and the classes are a
+	representation of the geographical data and coresponding
+	operations. <xref linkend='classOverview'/> shows the five
+	classes. All functionality can be accessed through the two
+	classes Slope and RiverNet. They create and handle the other
+	objects (RiverSegment, RiverPoint and SlopePoint).
+
+      </para>
+      <figure id='classOverview'>
+        <title>
+	  Classes used for the Catflow Wizard.
+        </title>
+        <graphic fileref="figures/classes.png"/>
+      </figure>
+
+    </section> 
+    <section>
+      <title>
+        Wizard form
+      </title>
+      <para>
+         The wizard guides the user though the data generation.
+	 Its designed is based on a wizard tutorial
+	 at <ulink url='http://www.theopensourcery.com/vb15tut.htm'/>. 
+	 The design is based on a Multipage Tabs
+	 object which shows the different registers subsequentially
+	 depending on the state of the program flow.
+	 The program flow control is event based. 
+ 	 While the form is opened, the <command>UserForm_Initialize</command>-Method
+	 initializes lists and standard values and presents the
+	 intro page. The methods <command>initialiseWithShapeLayers</command> and
+	 <command> initialiseWithRasterLayers </command> are used to fill
+	 the lists containing GIS layers with names of corresponding laysers, while 
+         <command>setupcbxDefaultGridShape</command> is uesd to fill
+	 the list for the slope grid shape (compare <xref linkend='step5'/>)
+      </para>
+
+      <para>
+         The user navigates through the different registers
+	 using either the buttons or the subway map 
+	 map (Left-hand side on the wizard, compare <xref
+	 linkend='step1'/>. These user actions call the methods 
+         <itemizedlist>
+		<listitem><para> ImFinish_Click</para></listitem>
+		<listitem><para> ImIntro_Click</para></listitem>
+		<listitem><para> ImRivernet_Click</para></listitem>
+		<listitem><para> ImRiverParam_Click</para></listitem>
+		<listitem><para> ImSlopeCoord_Click</para></listitem>
+		<listitem><para> ImSlopeParam_Click</para></listitem>
+		<listitem><para> ImSlopes_Click</para></listitem>
+		<listitem><para> lFinish_Click</para></listitem>
+		<listitem><para> lRiverParam_Click</para></listitem>
+		<listitem><para> lSlopeCoord_Click</para></listitem>
+		<listitem><para> lIntro_Click</para></listitem>
+		<listitem><para> lRivernet_Click</para></listitem>
+		<listitem><para> lSlopeParam_Click</para></listitem>
+		<listitem><para> lSlopes_Click</para></listitem>
+		<listitem><para>cbPrevious_Click</para></listitem>
+		<listitem><para> cbNext_Click</para></listitem>
+        </itemizedlist>
+        which are only active if the required previous steps are
+	finished. 
+        These methods call the functions
+	<command>processRivernet</command> and <command>processSlopes</command> if
+	required while switching from one register to the next. These
+	two functions are important becaues they create the shape
+	files and objects for the subsequent program flow.
+	During its execution 
+        <command>processRivernet</command> 
+	calls the method 
+	<command>initializeStrahlerParameters</command> and
+        <command>riverNetPointsIntoFeatureClass</command>.
+	<command>InitializeStrahlerParameters</command> 
+	is called at this point since the
+	highest Strahler order is not known before the
+	river network is processed, however this information is
+	necessary for the setup of the interface of
+	<link linkend='riverParameterDefinition'> step 3</link>.
+        <command>RiverNetPointsIntoFeatureClass</command> adds the
+	river network points into the corresponding shape file. This
+	is supposed to be a functionality of the riverNet class, but
+	it did not work within the riverNet object.
+	</para>
+
+	<para>
+	 The state of the wizard is also changed if the user makes
+	 a selection in a list or combobox. These changes call one of
+	 the following methods. They set and reset internal variables
+	 according to the users selection
+	 and update the user interface if necessary by calling 
+	 <command>UpdateUI</command>.
+         <itemizedlist>
+		<listitem><para> cbxBankSlope_Change</para></listitem>
+		<listitem><para> cbxConnected_Change</para></listitem>
+		<listitem><para> cbxOrder_Change</para></listitem>
+		<listitem><para> cbxRiverSplitLength_Change</para></listitem>
+		<listitem><para> cbxShapeField_Change</para></listitem>
+		<listitem><para> cbxSplitField_Change</para></listitem>
+		<listitem><para> cbxStrickler_Change</para></listitem>
+		<listitem><para> cbxSurfWidth_Change</para></listitem>
+		<listitem><para> cbxThicknessField_Change</para></listitem>
+		<listitem><para> cbxWtD_Change</para></listitem>
+		<listitem><para> cbxCritRain_Change</para></listitem>
+		<listitem><para> lstLineLayerFields_Click</para></listitem>
+		<listitem><para> lstLineLayers_Click</para></listitem>
+		<listitem><para> lstPolygonLayerFields_Click</para></listitem>
+		<listitem><para> lstPolygonLayers_Click</para></listitem>
+		<listitem><para> lstRainStationLayer_Click</para></listitem>
+		<listitem><para> lstRasterBands_Click</para></listitem>
+		<listitem><para> lstRasterLayers_Click</para></listitem>
+		<listitem><para> lstRivernet_Click</para></listitem>
+                <listitem><para>Connected_Click</para></listitem>
+		<listitem><para> rain_none_Click</para></listitem>
+		<listitem><para> rain_polygon_Click</para></listitem>
+		<listitem><para> rain_raster_Click</para></listitem>
+         </itemizedlist>
+	</para>
+
+	<para>
+           <command>UpdateUI</command> itself calls
+	   <command>setupLayerFields</command>
+	   multiple times (once for each list that allows to select an
+	   attribute field from
+	   a layer) and all other methods
+	   which are required to keep the user interface updated.
+	   These are:
+           <itemizedlist>
+		<listitem><para> tabs_Change</para></listitem>
+		<listitem><para> setupRasterBand</para></listitem>
+		<listitem><para> setupcbxOrder</para></listitem>
+           </itemizedlist>
+	   <command>tabs_Change</command> controls whether command
+	   buttons (Previous, Next, Cancel and Finish) are enabled. It
+	   also calls the method <command> setSubwayMap</command> which
+	   controls the look and functionality of the subway map.
+	</para>
+
+        <para>
+	   User text input is checked through the events below, which all
+	   make use of the methods parseValue and parseList.
+           <itemizedlist>
+		<listitem><para> BankSlope_AfterUpdate</para></listitem>
+		<listitem><para> CritRain_AfterUpdate</para></listitem>
+		<listitem><para> DefaultThickness_AfterUpdate</para></listitem>
+		<listitem><para> InputEta_AfterUpdate</para></listitem>
+		<listitem><para> InputXsi_AfterUpdate</para></listitem>
+		<listitem><para> riverSplitLength_AfterUpdate</para></listitem>
+		<listitem><para> SlopeSplitDefault_AfterUpdate</para></listitem>
+		<listitem><para> Strickler_AfterUpdate</para></listitem>
+		<listitem><para> SurfWidth_AfterUpdate</para></listitem>
+		<listitem><para> WtD_AfterUpdate</para></listitem>
+           </itemizedlist>
+	</para>
+
+	<para>
+	User actions include the three command buttons Cancel, Finish
+	and Help which trigger the events
+         <itemizedlist>
+		<listitem><para>  cbCancel_Click</para></listitem>
+		<listitem><para> cbFinish_Click</para></listitem>
+		<listitem><para> cbHelp_Click</para></listitem>
+        </itemizedlist>
+	Cancel just unloads the form, while help opens the help file. 
+	Finish is only active if the required previous
+	steps are finished. It then calls the three methods 
+        <command> setDefaultsAndAttributeFields</command>,
+        <command> showResults</command>, and
+        <command> createCatflowFiles</command>.
+        <command> SetDefaultsAndAttributeFields</command> passes user
+	input for default values and attribute field selections 
+	to the objects.
+        <command> showResults</command> displays the newly created shape
+	files, while 
+        <command> createCatflowFiles</command> generates the textfiles for
+	catflow using the corresponding methods of the objects.
+	</para>
+    </section>
+    <section>
+      <title>
+        Slope Class
+      </title>
+      
+      <para>
+The Slope class provides the interface to convert GIS
+information into text files, which can be read by catflow after a
+further processing step with matlab (see also <xref
+linkend='matlabPrep'/>).
+
+<table frame='all'><title>Properties of the class Slope</title>
+<tgroup cols='4' align='left' colsep='1' rowsep='1'>
+<thead>
+<row>
+  <entry>Name</entry>
+  <entry>Access</entry>
+  <entry>Description</entry>
+  <entry>Data Type</entry>
+  <entry>Prerequisits</entry>
+</row>
+</thead>
+<tbody>
+<row><entry> ID  </entry>
+<entry>rw</entry>
+<entry>Unique ID. Generated as described in <xref linkend='creatingSlopePoly'/></entry>
+<entry>Integer</entry>
+<entry></entry>
+</row>
+<row><entry> DEM</entry>
+<entry>rw</entry>
+<entry>The digital elevation model provides height information for the 2D representation of a slope.</entry>
+<entry>IFunctionalSurface</entry>
+<entry></entry>
+</row>
+<row><entry> SlopeFallLine  </entry>
+<entry>rw</entry>
+<entry>The slope fall line defines the line at which the 2D description of a slope is generated.</entry>
+<entry>IPath</entry>
+<entry>The slope fall line must be completely within the slope polygon.</entry>
+</row>
+<row><entry> SplitLength  </entry>
+<entry>rw</entry>
+<entry>Distance between reference points used to describe the slope fall line</entry>
+<entry>Double</entry>
+<entry></entry>
+</row>
+<row><entry> numberOfSlopePoints  </entry>
+<entry>ro</entry>
+<entry>Number of reference points used to describe the slope fall line</entry>
+<entry>Integer</entry>
+<entry>Slope fall line and digital elevation model need to be set successfully before the number of reference points is available.</entry>
+</row>
+<row><entry> OutLet  </entry>
+<entry>ro</entry>
+<entry>The outlet is the end point of the slope fall line.</entry>
+<entry>IPoint</entry>
+<entry>The slope fall line needs to be set successfully before the outlet is available</entry>
+</row>
+<row><entry> SlopePointFeatureClass  </entry>
+<entry>rw</entry>
+<entry>A feature class (usually a shape file) which will hold the reference points used for the representation of the slope.</entry>
+<entry>IFeatureClass</entry>
+<entry></entry>
+</row>
+<row><entry> SlopePolygon  </entry>
+<entry>rw</entry>
+<entry>SlopePolygon describes the boundary of a slope.</entry>
+<entry>IPolygon</entry>
+<entry>The slope fall line must be completely within the slope polygon.</entry>
+</row>
+<row><entry> Area  </entry>
+<entry>ro</entry>
+<entry>Area of the slope.</entry>
+<entry>Double</entry>
+<entry>SlopePolygon must be set.</entry>
+</row>
+<row><entry> ThiessenPolygon  </entry>
+<entry>ro</entry>
+<entry>Thiessen polygons are used to calculate the width of the slope at a certain point. An error (errThiessenShapeVisible) is thrown if the shape file thiessenFeatureClass is visible.</entry>
+<entry>IPolygon</entry>
+<entry>The following properties must be set successfully before Thiessen polygons are available: thiessenFeatureClass, slopePointFeatureClass, DEM, and the slopeFallLine  </entry>
+</row>
+<row><entry> ThiessenPolygonFeatureClass  </entry>
+<entry>rw</entry>
+<entry>A feature class (usually a shape file) which will hold the
+Thiessen polygons used to calculate the width of the slope at a
+certain reference point.
+</entry>
+<entry>IFeatureClass</entry>
+<entry></entry>
+</row>
+<row><entry> Thickness</entry>
+<entry>rw</entry>
+<entry>Thickness (z-direction) of the slope at the bottom. </entry>
+<entry>Double</entry>
+<entry></entry>
+</row>
+<row><entry> SlopeShapeType  </entry>
+<entry>rw</entry>
+<entry>This property describes the shape of the slope. The two options are available as constants SlopeShapeTypeConstantThickness and SlopeShapeTypeCakeShape.</entry>
+<entry>Integer</entry>
+<entry></entry>
+</row>
+<row><entry> XRef</entry>
+<entry>rw</entry>
+<entry>Reference value for the x coordinate. All other coordinates are reported with reference to this reference.</entry>
+<entry>Double</entry>
+<entry></entry>
+</row>
+<row><entry> YRef</entry>
+<entry>rw</entry>
+<entry>Reference value for the y coordinate. All other coordinates are reported with reference to this reference.</entry>
+<entry>Double</entry>
+<entry></entry>
+</row>
+<row><entry> ZRef</entry>
+<entry>rw</entry>
+<entry>Reference value for the z coordinate. All other coordinates are reported with reference to this reference.</entry>
+<entry>Double</entry>
+<entry></entry>
+</row>
+</tbody>
+</tgroup>
+</table>
+
+The class offers the three methods
+<command>updateThiessenFeatureClass</command>,
+<command>updatePointFeatureClass</command>, and
+<command>toMatlab</command>. The first two methods update 
+the content of the feature classes (shape files) based on the current
+properties of the class. <command>toMatlab(w() As Double, X() As Double, Y() As
+Double, Z() As Double)</command> returns the necessary coordinates (x,y,z, and
+width) as arrays to write the matlab input file.
+      </para>
+
+      <para>
+The class also defines a few private functions and methods. 
+The method <command>splitFallLine</command> generates equally spaced
+reference points as SlopePoint objects from the slope fall line.
+To do this, it uses the function <command>addPoint(Point As IPoint) As
+SlopePoint</command>, which creates a new SlopePoint object based on an
+IPoint object created during the split operation.
+The method  <command>deleteOld</command> deletes all features from a
+feature class. This is necessary if properties of the slope are
+changed after points and Thiessen polygons are calculated.
+The method <command> testSlopeLineWithinCatchment</command> tests
+wheather a line is completely within a polygon, which is a required
+property for a slope fall line and a slope polygon.
+The function <command> testSlopeLineToBeFlipped</command> flippes
+slope lines based on the DEM if the outlet of the slope line is 
+higher than the start point.
+The method <command> reCalcSplit</command> resets some internal flags
+(lineSplited, thiessenCalculated and slopePointFCisUpToDate) such that
+calculated properties are updated after relevant changes.
+
+      </para>
+    </section> 
+        <section>
+      <title>
+        Slope Point Class
+      </title>
+        SlopePoint objects are used to represent the slope at all
+reference points. The advantage of using this class is, that
+SlopePoints provide the width of the slope at their position. To do
+that, they need to access some information of the corresponding slope
+object (e.g. thiessenPolygons, splitLength).
+
+      <para>
+
+<table frame='all'><title>Properties of the class Slope</title>
+<tgroup cols='4' align='left' colsep='1' rowsep='1'>
+<thead>
+<row>
+  <entry>Name</entry>
+  <entry>Access</entry>
+  <entry>Description</entry>
+  <entry>Data Type</entry>
+  <entry>Prerequisits</entry>
+</row>
+</thead>
+<tbody>
+<row><entry> Point</entry>
+<entry>rw</entry>
+<entry>The GIS-Object describing the coordinates of the slope point.</entry>
+<entry>IPoint</entry>
+<entry>The z-coordinate needs to be defined.</entry>
+</row>
+<row><entry> Slope</entry>
+<entry>rw</entry>
+<entry>The slope of which the SlopePoint is a part.</entry>
+<entry>Slope</entry>
+<entry></entry>
+</row>
+<row><entry> Width </entry>
+<entry>ro</entry>
+<entry>The width of the slope at this point.</entry>
+<entry>Double</entry>
+<entry>Slope and Point need to be set.</entry>
+</row>
+<row><entry>X</entry>
+<entry>ro</entry>
+<entry>X-Coordinate of the point.</entry>
+<entry>Double</entry>
+<entry>The point needs to be set.</entry>
+</row>
+<row><entry>Y </entry>
+<entry>ro</entry>
+<entry>Y-Coordinate of the point.</entry>
+<entry>Double</entry>
+<entry>The point needs to be set.</entry>
+</row>
+<row><entry> Z </entry>
+<entry>ro</entry>
+<entry>Z-Coordinate of the point.</entry>
+<entry>Double</entry>
+<entry>The point needs to be set. </entry>
+</row>
+</tbody>
+</tgroup>
+</table>
+
+ The class defines one private method <command>calculateWidth</command>
+which is called if the width needs to be recalculated. The width is
+calculated as the ratio of the area of the corresponding Thiessen polygon and the
+fall line length withing this polygon.
+      </para>
+    </section> 
+        <section>
+      <title>
+        River Network Class
+      </title>
+      
+      <para>
+  The RiverNetwork class provides the Interface to the functionality
+provided for river networks. Parameter properties of this class are
+set through common property methods, where the parameter type has to
+be specified. These can be any of the following integer values defined
+by the class: ParameterTypeSealedAreasConnected,
+ParameterTypeCriticalRain, ParameterTypeWidthToDepthRatio,
+ParameterTypeStrickler, ParameterTypeBankSlope,
+ParameterTypeSurfaceWidth, ParameterTypeSplitLength, 
+and ParameterTypeRainStationID. See <xref
+linkend='riverParameterDefinition'/> for a description of these
+parameters. If these parameters are defined in a field of the shape
+attribute table, this field can be defined either by name
+or by index number.
+
+<table frame='all'><title>Properties of the class RiverNetwork</title>
+<tgroup cols='4' align='left' colsep='1' rowsep='1'>
+<thead>
+<row>
+  <entry>Name</entry>
+  <entry>Access</entry>
+  <entry>Description</entry>
+  <entry>Data Type</entry>
+  <entry>Prerequisits</entry>
+</row>
+</thead>
+<tbody>
+<row><entry> RiverNetPoints </entry>
+<entry>ro</entry>
+<entry>Reference points for the parameterization of the river network.</entry>
+<entry>Multipoint</entry>
+<entry>The DEM and the Polylines need to be set first. However, this
+is not tested yet!</entry>
+</row>
+<row><entry> MaximumStrahlerOrder </entry>
+<entry>ro</entry>
+<entry>The Strahler order for the outflow river segment. 
+</entry>
+<entry>Long</entry>
+<entry>The DEM and the Polylines need to be set first. However, this
+is not tested yet!</entry>
+</row>
+<row><entry>DEM</entry>
+<entry>wo</entry>
+<entry>The digital elevation model for the area is important for the river geometry. </entry>
+<entry>IFunctionalSurface</entry>
+<entry></entry>
+</row>
+<row><entry> Polylines </entry>
+<entry>rw</entry>
+<entry>This feature class (e.g. shape file) represents a collection of
+all relevant river segments.  </entry>
+<entry>IFeatureClass</entry>
+<entry>DEM needs to be defined first. The shape type of the
+IFeatureClass needs to be  polyline.</entry>
+</row>
+<row><entry> RainstationPolygons </entry>
+<entry>rw</entry>
+<entry>This feature class (e.g. shape file) contains polygons,
+which define the area for which the data of a certain rain station 
+is relevant.  </entry>
+<entry>IFeatureClass</entry>
+<entry></entry>
+</row>
+<row><entry> topologySearchRadius</entry>
+<entry>rw</entry>
+<entry>If start and end points of adjacent river segments are not
+snaped, this radius defines the search radius within the next segment
+is searched. If the radius is set too large and multiple river
+segments have their start point within this radius, an error is thrown
+during the generation of the topology. </entry>
+<entry>Double</entry>
+<entry></entry>
+</row>
+<row><entry> ParameterFieldIndex(parameterType As Long) </entry>
+<entry>rw</entry>
+<entry>Index number of the attribute field in the polyline feature
+class (shape file) containing values for the selected
+parameter type.</entry>
+<entry>Integer</entry>
+<entry>Polylines must be set in order to set the parameter field
+index.</entry>
+</row>
+<row><entry> ParameterFieldName(parameterType As Long) </entry>
+<entry>rw</entry>
+<entry>Name of the attribute field in the polyline feature
+class (shape file) containing values for the selected
+parameter type.</entry>
+<entry>String</entry>
+<entry>Polylines must be set in order to set the parameter field
+index.</entry>
+</row>
+<row><entry> DefaultParameterValue(parameterType As Long, Optional StrahlerOrder As Integer = -1) </entry>
+<entry>rw</entry>
+<entry>Default value for a certain parameter This value is overriden
+by entries in the corresponding parameter field (if one is defined).
+Some parameters depend
+on the strahler order and are only accessable, if the StrahlerOrder is
+passed during the call.</entry>
+<entry>Double</entry>
+<entry>The default value must be within the valid range</entry>
+</row>
+</tbody>
+</tgroup>
+</table>
+</para>
+<para>
+The class defines the following three methods and functions:
+<command> connectSlope(s As slope)</command> allows to connect a slope
+object to the nearest reference point of the river network. If another
+slope is connected to the same reference point, an error occurs.
+<command> toCatflow(outStream As TextStream)</command> writes all
+catflow specific parameters to outStream. The function
+<command> getRainstationID(Point As IPoint)</command> returns the
+ID for the relevant rain station for a certain point. If the point
+is outside the defined polygons, the default value is returned.
+</para>
+<para>
+Internally, the class uses a number of private functions and methods.
+The function <command> numberOfUpStreams</command> returns the number
+of upstream segments for a certain segment.
+The function <command> numOfOutflows</command> returns the number of
+out flows for a river network. This should be one for a network with a
+correct topology. 
+</para>
+<para>
+The processing of the river network is done mainly by two methods:
+The first method <command> extractPathpolylines</command> generates river
+segments from the polyline feature class. After counting the number of
+polylines, all arrays are initialized with
+the method <command> initializeArrays</command>.
+Parameter values are assigned to all RiverSegment objects and
+all segments are tested whether they are pointing in a downstream direction with
+the method <command> findReversedPolylines</command>. 
+Then the topology is created with 
+the method <command> calcTopology</command>.
+ An error with the number errorTooManyOutflows occurs if more than one
+outflows are counted, which means that some river segments are not
+connected to the rest of the river network.
+</para>
+<para>
+The second method for the processing of the river network is called 
+<command> calcExecutionSequence</command> and assigns
+parameters and sequence numbers (increasing from springs to the
+outlet) for all reference points of the river network. First, all
+springs are added to a queue with 
+the method <command> allSpringsToQueue</command>.
+The method <command> processNextSegment</command> handels the actual
+processing of a river segment (i.e. assigning sequence numbers,
+calculationg Strahler order (<command>
+setStrahlerOrderNextDownstream</command>), and
+marking segment as processed). Also
+each processed river segment adds the next downstream segment "A" to the queue 
+if there are no more unprocessed segments upstream of A. This way, it
+is assured that for each segment all upstream segments have lower
+sequence numbers.
+</para>
+<para>
+The method <command> pathIsReversed</command> reverses the orientation
+of the segment within 
+the method <command> findReversedPolylines</command>. 
+The methods <command> showPath</command>
+and <command> showOutflows</command>
+are used to indicate topological errors of the river network during
+execution of 
+the method <command> calcTopology</command>.
+The method <command> reinitializeRiverNet</command> resets some
+internal flags in order to restart calculations after a change of
+properties.
+The method <command> Class_Initialize</command> finally initialized
+the array for the default values.
+</para>
+<para>
+Improvements for next version (ToDo): 
+<itemizedlist>
+          <listitem>
+            <para>Calling <command>
+		reinitializeRiverNet</command> always if necessary and check whether
+		required properties are set before calculations are started
+		(fail-prove).
+            </para>
+          </listitem>
+          <listitem>
+            <para>Since Strahler order is required to assign
+parameters correctly and parameters are assigned during the same step
+as the order is calculated, this step is called twice. However, this
+can be omitted if the river segment class does not have its copies of
+all properties (see below)</para>
+          </listitem>
+        </itemizedlist>
+
+      </para>
+    </section> 
+        <section>
+      <title>
+        River Segement Class
+      </title>
+      
+      <para>
+
+<table frame='all'><title>Properties of the class RiverSegment</title>
+<tgroup cols='4' align='left' colsep='1' rowsep='1'>
+<thead>
+<row>
+  <entry>Name</entry>
+  <entry>Access</entry>
+  <entry>Description</entry>
+  <entry>Data Type</entry>
+  <entry>Prerequisits</entry>
+</row>
+</thead>
+<tbody>
+<row><entry> River net</entry>
+<entry>rw</entry>
+<entry>River net of which the segment is a part of.</entry>
+<entry>RiverNet</entry>
+<entry></entry>
+</row>
+<row><entry> SplitLength</entry>
+<entry>rw</entry>
+<entry>Distance between reference points for the description of the
+river segment</entry>
+<entry>Double</entry>
+<entry></entry>
+</row>
+<row><entry> DEM </entry>
+<entry>rw</entry>
+<entry>Digital elevation model for elevation information required for
+computation of river bed geometry.</entry>
+<entry>IFunctionalSurface</entry>
+<entry></entry>
+</row>
+<row><entry> Path </entry>
+<entry>rw</entry>
+<entry>GIS-Object describing the x,y information of this river segment.</entry>
+<entry>IPath</entry>
+<entry>prereq</entry>
+</row>
+<row><entry> allPoints </entry>
+<entry>ro</entry>
+<entry>All reference points used for the describtion of this river segment.</entry>
+<entry>Multipoint</entry>
+<entry>Path needs to be set</entry>
+</row>
+<row><entry> firstPointID </entry>
+<entry>ro</entry>
+<entry>ID of the most upstream reference point of this river segment</entry>
+<entry>Integer</entry>
+<entry>Path needs to be set</entry>
+</row>
+<row><entry> lastPointID </entry>
+<entry>ro</entry>
+<entry>ID of the most downstream reference point of this river segment</entry>
+<entry>Integer</entry>
+<entry>Path needs to be set</entry>
+</row>
+<row><entry> lastRiverPoint</entry>
+<entry>ro</entry>
+<entry>The most downstream RiverPoint object</entry>
+<entry>RiverPoint</entry>
+<entry>Path needs to be set</entry>
+</row>
+<row><entry> fromPoint</entry>
+<entry>ro</entry>
+<entry>The GIS-object of the most upstream RiverPoint</entry>
+<entry>IPoint</entry>
+<entry>Path needs to be set</entry>
+</row>
+<row><entry> toPoint</entry>
+<entry>ro</entry>
+<entry>The GIS-object of the most downstream RiverPoint</entry>
+<entry>IPoint</entry>
+<entry>Path needs to be set</entry>
+</row>
+<row><entry> StrahlerOrdnung</entry>
+<entry>rw</entry>
+<entry>Strahler Order needs to be assigned by the RiverNet-object</entry>
+<entry>Integer</entry>
+<entry></entry>
+</row>
+<row><entry> SealedAreasConnected </entry>
+<entry>rw</entry>
+<entry>See <xref linkend='riverParameterDefinition'/> for a description. To be assigned by the RiverNet-object.</entry>
+<entry>Boolean</entry>
+<entry></entry>
+</row>
+<row><entry> SealedSurfaceWidthParallelToChannel</entry>
+<entry>rw</entry>
+<entry>See <xref linkend='riverParameterDefinition'/> for a description. To be assigned by the RiverNet-object.</entry>
+<entry>Double</entry>
+<entry></entry>
+</row>
+<row><entry>  CriticalRainFall</entry>
+<entry>rw</entry>
+<entry>See <xref linkend='riverParameterDefinition'/> for a description. To be assigned by the RiverNet-object.</entry>
+<entry>Double</entry>
+<entry></entry>
+</row>
+<row><entry>  WidthToDepthRatio</entry>
+<entry>rw</entry>
+<entry>See <xref linkend='riverParameterDefinition'/> for a description. To be assigned by the RiverNet-object.</entry>
+<entry>Double</entry>
+<entry></entry>
+</row>
+<row><entry>  ChannelBankSlope</entry>
+<entry>rw</entry>
+<entry>See <xref linkend='riverParameterDefinition'/> for a description. To be assigned by the RiverNet-object.</entry>
+<entry>Integer</entry>
+<entry></entry>
+</row>
+<row><entry> StricklerRoughness</entry>
+<entry>rw</entry>
+<entry>See <xref linkend='riverParameterDefinition'/> for a description. To be assigned by the RiverNet-object.</entry>
+<entry>Double</entry>
+<entry></entry>
+</row>
+<row><entry>  XRef</entry>
+<entry>rw</entry>
+<entry>All x-coordinates are reported as difference to this value.</entry>
+<entry>Double</entry>
+<entry></entry>
+</row>
+<row><entry> Get YRef</entry>
+<entry>rw</entry>
+<entry>All y-coordinates are reported as difference to this value.</entry>
+<entry>Double</entry>
+<entry></entry>
+</row>
+</tbody>
+</tgroup>
+</table>
+</para>
+<para>
+The RiverSegment class provides the function
+<command> assignNumbers(start As Integer, lastRiverPoint() As RiverPoint)</command>. 
+Parameters are the lowest river point ID to be used (start) as well as an array of 
+the previous RiverPoints upstream of the current segment (lastRiverPoint). The return value is the
+highest river point ID used. The method 
+<command> connectSlope(s As slope, PointID As Integer)</command> allows to assign the slope s to the
+RiverPoint with the identification PointID. This means that the water leaving slope s will enter
+the river network at this point. The method
+<command> toCatflow(outStream As TextStream) </command>
+writes the parameters for the RiverSegment to the specified text stream.
+</para>
+<para>
+The class also defines to internal methods. 
+<command> addPoint</command> creates new RiverPoint objects from
+ArcGIS IPoint objects and assigns correct ID numbers and topology information.
+The method 
+<command>testPointAvailability</command>
+is called if properties are queried which require that identification
+numbers have been assigned. If this hasn't been done, then IDs are assigned starting
+from 0. If the path property has not been set, the method will raise an error.
+</para>
+<para>
+Improvements for the next version: Change the class such that the
+RiverSegment object does not know it's physical properties (<xref
+linkend='riverParameterDefinition'/>). If these are required, it will
+query them from the corresponding RiverNet object. This allows a
+slimmer object interface. It also solves the problem of calling the
+parameter assignement method twice (see improvements for the rivernet
+class).
+</para>
+<para>
+How about removing this class entirely? Creating the correct river points could be done by the
+RiverNet object. All other calls are (more or less?) passed to the collection of all river points.
+      </para>
+    </section> 
+        <section>
+      <title>
+        River Point Class
+      </title>
+      <para>
+The RiverPoint object defines a reference point in the river network for which physical
+properties are known (or computed).
+<table frame='all'><title>Properties of the class RiverPoint</title>
+<tgroup cols='4' align='left' colsep='1' rowsep='1'>
+<thead>
+<row>
+  <entry>Name</entry>
+  <entry>Access</entry>
+  <entry>Description</entry>
+  <entry>Data Type</entry>
+  <entry>Prerequisits</entry>
+</row>
+</thead>
+<tbody>
+<row><entry> River net</entry>
+<entry>rw</entry>
+<entry>River net of which the point is a part of.</entry>
+<entry>RiverNet</entry>
+<entry></entry>
+</row>
+<row><entry>  X</entry>
+<entry>rw</entry>
+<entry>The x-coordinate of the river point</entry>
+<entry>Double</entry>
+<entry></entry>
+</row>
+<row><entry>  Y</entry>
+<entry>rw</entry>
+<entry>The y-coordinate of the river point</entry>
+<entry>Double</entry>
+<entry></entry>
+</row>
+<row><entry>  Z</entry>
+<entry>rw</entry>
+<entry>The z-coordinate of the river point</entry>
+<entry>Double</entry>
+<entry></entry>
+</row>
+<row><entry>  IPoint</entry>
+<entry>ro</entry>
+<entry>The ArcGIS object describing all coordinates of the river point</entry>
+<entry>IPoint</entry>
+<entry></entry>
+</row>
+<row><entry>  ID</entry>
+<entry>rw</entry>
+<entry>The identification (sequence) number of the river point</entry>
+<entry>Integer</entry>
+<entry></entry>
+</row>
+<row><entry>  order</entry>
+<entry>rw</entry>
+<entry>The order of the river point</entry>
+<entry>Double</entry>
+<entry></entry>
+</row>
+
+
+<row><entry> DownstreamRiverPoint </entry>
+<entry>rw</entry>
+<entry>The next river point object downstream of the current point.</entry>
+<entry>RiverPoint</entry>
+<entry></entry>
+</row>
+<row><entry>  upStreamCount </entry>
+<entry>ro</entry>
+<entry>The number of river point objects directly upstream (Without other river point objects inbetween 
+the current and the listed river point) of the current point. This can be greater than 1 because of tributaries.</entry>
+<entry>Integer</entry>
+<entry></entry>
+</row>
+<row><entry>  UpstreamRiverPoint(position As Integer) </entry>
+<entry>ro</entry>
+<entry>The river point object directly upstream. Since it is possible
+to have muliple such points, the position in the list
+of all upstream river point objects needs to be specified. Can be set
+through two methods (see the text below the table).</entry>
+<entry>RiverPoint</entry>
+<entry>Position must be valid, i.e. &gt;0 and &els;upStreamCount</entry>
+</row>
+<row><entry>  RiverSegment </entry>
+<entry>rw</entry>
+<entry>The river segment of which the point is a part of</entry>
+<entry>RiverSegment</entry>
+<entry></entry>
+</row>
+<row><entry>  IsTheOutlet  </entry>
+<entry>rw</entry>
+<entry>True for the most downstream river point of the catchment</entry>
+<entry>Boolean</entry>
+<entry></entry>
+</row>
+
+<row><entry>  ChannelDepth</entry>
+<entry>rw</entry>
+<entry>Depth of the channel at this position. Can be assigned or is estimated (through iteration) from physical parameters.</entry>
+<entry>Double</entry>
+<entry>prereq</entry>
+</row>
+<row><entry>  DepthIterationLimit</entry>
+<entry>rw</entry>
+<entry>If the number of iteration steps for estimating the depth is higher than this limit, an error is thrown.</entry>
+<entry>Double</entry>
+<entry></entry>
+</row>
+<row><entry>  ChannelBottomElevation</entry>
+<entry>ro</entry>
+<entry><para>Elevation of the channel bottom = (DEM-elevation at this point) - (channel depth)</para>
+       <para>If the depth has not been estimated before, this triggers the iteration. Since the
+             channel bottom elevation of neighboring river points is required for the estimation formula,
+             an infinite series of method calls would occur, if this method was used by the estimation
+             formula. See also the next property.</para> </entry>
+<entry>Double</entry>
+<entry></entry>
+</row>
+<row><entry>  currentChannelBottomElevation</entry>
+<entry>ro</entry>
+<entry>The current estimation of the elevation based on the current value for the
+       depth.</entry>
+<entry>Double</entry>
+<entry></entry>
+</row>
+
+<row><entry>  ChannelBottomSlope</entry>
+<entry>ro</entry>
+<entry>The slope at the bottom of the channel at the river point.</entry>
+<entry>Double</entry>
+<entry></entry>
+</row>
+<row><entry>  ChannelBottomWidth</entry>
+<entry>ro</entry>
+<entry>The width at the bottom of the channel at the river point.</entry>
+<entry>Double</entry>
+<entry></entry>
+</row>
+<row><entry>  Slope</entry>
+<entry>rw</entry>
+<entry>Slope object assigned to this river point or <command>nothing</command>. 
+       The corresponding slope discharges into the river at this point.</entry>
+<entry>Slope</entry>
+<entry></entry>
+</row>
+<row><entry>  slopeID</entry>
+<entry>ro</entry>
+<entry>ID of the assigned slope or 0</entry>
+<entry>Integer</entry>
+<entry></entry>
+</row>
+<row><entry>  SlopeArea</entry>
+<entry>ro</entry>
+<entry>Area of the assigned slope or 0</entry>
+<entry>Double</entry>
+<entry></entry>
+</row>
+<row><entry>  CatchmentArea</entry>
+<entry>ro</entry>
+<entry>Area of the catchment for the river point</entry>
+<entry>Double</entry>
+<entry></entry>
+</row>
+
+</tbody>
+</tgroup>
+</table>
+
+A method and a function allow to manipulate upstream river points: The function
+<command> deleteUpstreamRiverPoint(RiverPoint As RiverPoint) </command> removes the
+specified river point from the list of upstream river points. Returns true upon successfull
+deletion. The method 
+<command> AddUpstreamRiverPoint(RiverPoint As RiverPoint)</command> adds the specified
+point to the list of upstream river points.
+
+</para>
+<para>
+
+Four functions and two method are used internally for the estimation of the river depth. The
+iteration is started with the private method
+<command> estimateDepth</command>. From this method, the function
+<command> iterationStep</command> is called until it returns true 
+(iteration is stable for all river points) or until the upper limit
+of iteration staeps is reached. In the later case, the
+<command> allDepthsOK</command> sets the depthIsOK-flag for all river 
+points, supressing further estimation. A warning is issued in this case.
+The slope at the channel bottom is required to estimate the depth. It is
+calculated with the private function 
+<command> calcChannelBottomSlope(iterating As Boolean)</command>.
+If the parameter is true, the property
+<command> currentChannelBottomElevation</command> from neighboring
+points is used in order to avoid a second triggering of the iteration.
+The estimation formula for the depth is defined in the private function
+<command>depthEstimationFormula</command>.
+The method
+<command>allDepthsOutput</command> allows to output the current
+values for all river points for debuging purposes.
+
+</para>
+<para>
+The class defines two additional methods. 
+<command> CatflowParameterOutput</command> writes a line
+with all required parameters for catflow to the specified
+stream. The 
+private method <command> Class_Initialize</command> initializes
+some of the internal variables.
+ 
+      
+      </para>
+      <para>
+      Improvements for the next version: Improve iteration. In some cases, it is numerical instable, e.g. some
+      river points alternate between two values at the end. The
+      property DepthIterationLimit might be more appropriate at the
+      level of the riverNet.
+      </para>
+      
+    </section>  
+    <para>
+    </para>
+  </section> 
+</chapter>

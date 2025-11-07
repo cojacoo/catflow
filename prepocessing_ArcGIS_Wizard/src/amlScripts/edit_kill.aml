@@ -1,0 +1,8 @@
+&do i = 1 &to %.n_haenge%
+&if [exists hang%i% -cover] &then kill hang%i% all
+&if [exists hang%i%p -cover] &then kill hang%i%p all
+&if [exists hang%i%sp -cover] &then kill hang%i%sp all
+&if [exists hang%i%_th -cover] &then kill hang%i%_th all
+&if [exists hang%i%end -cover] &then kill hang%i%end all
+&if [exists hang%i%a -cover] &then kill hang%i%a all
+&end

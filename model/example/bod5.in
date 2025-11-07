@@ -1,0 +1,57 @@
+12.05.2012 17:25:00.00         % Startzeit                                                
+08.06.2012 12:15:00.00         % Endzeit                                                  
+        0.0                    % Zeit Offset                                              
+pic                            % Berechnungsverfahren (exp, adi, apk, bcg, pic, mix)      
+      3600.                     % dtbach [s]                                               
+        5.e-7                  % qtol   [cbm/s pro s]                                     
+       3600.                     % dt_max [s]                                               
+        0.01                    % dt_min [s]                                               
+       10.00                   % dt [s] (Startzeitschritt)                                
+        0.020                  % d_Th_opt [-] Steuerpar. fuer Zeitschritt  VORHER 0.030               
+        0.020                  % d_Phi_opt [-]    Steuerpar. fuer Zeitschritt      VORHER 0.030       
+         5                     % n_gr (3) ab n_gr Picardit. nur Zeitschr.Reduk.           
+        15                     % it_max (7) max. Picarditerationen                        
+        1.0e-3                  % piceps [-] (1.e-3) Iterationsziel Picard     5.e-4, 9.0e-6            
+        1.0e-6                  % cgeps  [m] (5.e-6) Iterationsziel Konj.Grad.      1.e-5, 7.0e-7       
+       -72.                     % rlongi Bezugslaenge fuer Uhrzeit (hier: MEZ)             
+        -71.5                  % longi  Bezugslaenge des EZG                              
+       -38.5                   % lati   Bezugsbreite  des EZG                             
+       0                       % istact Anzahl der verschiendenen Stoffe                  
+       -80                     % seed fuer Zufallszahlengenerator                         
+noiact			       % Randbedingungstyp fuer Stoffinput                                       
+     18                       % Anzahl der Ausgabefiles                                   
+0 1 1  0 0 0  1 0 0  1 1 0 0 0 0 0 0 1                                                    
+out/log_m.out                  
+out/vg_tab_m.out               
+out/bilanz_m.csv               
+out/theta_m.out                
+out/psi_m.out                  
+out/profil_l.in                   
+out/fl_xsi_m.out               
+out/fl_eta_m.out               
+out/senken_m.out               
+out/qoben_m.out                
+out/etinz_m.out                
+out/gang_m.out                 
+out/ve_m.out                   
+out/vx_m.out                   
+out/c_m.out                    
+out/hko_m.out                  
+out/sko_m.out
+out/relsat_m.out   
+           4
+in/global/soil_lux.def                              
+in/global/timeseries_edit.def            %ZEIT_Malalca.def           
+in/global/landuse.def                  %/landuse/lu_fileWT13BF11.def         
+in/global/windrich.def     
+          1
+in/twolayer.geo                                                                   
+in/soil_types_lux.dat                         %soil_types_edit.dat;soil_ebnit.def
+in/ks_nik.dat
+in/theta_nik.dat
+in/macroporosity.mak                   %profil_100_10_130_iso.mak                                                                     
+in/control_volume.cv                  %cont_vol_Jahr.cv                                                                                                                              
+in/theta_try.ini                        %psi_nov4.ini                                                                                                                         
+in/printout_nik.prt                                                                       
+in/surface_attri_nik.pob                      %veg_disJahr.pob                                                                      
+in/hill_BC_edit.rb                            %HangMalalca_Jahr_nf100.rb                                                                         

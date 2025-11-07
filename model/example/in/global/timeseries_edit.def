@@ -1,0 +1,22 @@
+NIEDERSCHLAG
+1
+in/prec/clusteri_mai_edit.dat
+
+
+RANDBEDINGUNGEN
+0
+in/suction.dat
+
+SENKEN
+0
+
+Masse an Stoffen
+0
+
+LANDNUTZUNG
+in/landuse/lu_set.dat            %  Landnutzungszeitreihe
+
+KLIMA
+1
+in/climate/clima_mai_edit.dat
+

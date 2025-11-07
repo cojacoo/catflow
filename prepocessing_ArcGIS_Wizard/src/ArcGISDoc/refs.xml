@@ -1,0 +1,33 @@
+<bibliography>
+  <biblioentry id='Hutchinson'>
+    <abbrev>Hutchinson89</abbrev>
+    <biblioset relation='journal'>
+      <title>Journal of Hydrology</title>
+    </biblioset>
+    <biblioset relation='article'>
+      <title>A new procedure for gridding elevation and stream line data with automatic removal of spurious pits</title>
+      <author><surname>Hutchinson</surname><firstname>M.F.</firstname></author>
+      <year>1989</year>
+      <volumenum>106</volumenum>
+      <pagenums>211-232</pagenums>
+    </biblioset>
+  </biblioentry>
+  <biblioentry id='Maurer'>
+    <abbrev>Maurer97</abbrev>
+      <title>
+      Dissertation Universit&auml;t Fridericiana zu Karlsruhe
+      Physikalisch begr&uuml;ndete, zeitkontinuierliche Modellierung des Wassertransports in kleinen l&auml;ndlichen Einzugsgebieten
+      </title>
+      <author><surname>Maurer</surname><firstname>Thomas</firstname></author>
+      <year>1997</year>
+  </biblioentry>
+  <biblioentry id='catflowdoku'>
+    <abbrev>Catflow</abbrev>
+     
+      <title>CATFLOW: user guide and program documentation</title>
+      <author><surname>Maurer</surname><firstname>Thomas</firstname></author>
+      <author><surname>Zehe</surname><firstname>Erwin</firstname></author>
+      <year>2000</year>
+      
+  </biblioentry>
+</bibliography>  

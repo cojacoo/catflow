@@ -1,0 +1,59 @@
+{
+  "simulation": {
+    "start_time": "12.05.2012",
+    "end_time": "08.06.2012",
+    "dt_initial": 10.0,
+    "dt_min": 0.01,
+    "dt_max": 3600.0
+  },
+  "solver": {
+    "type": "pic",
+    "picard_tolerance": 0.001,
+    "picard_max_iter": 15,
+    "cg_tolerance": 1e-06
+  },
+  "mesh": {
+    "n_eta": 41,
+    "n_xsi": 101,
+    "geometry_file": "in/twolayer.geo"
+  },
+  "soil": {
+    "model": "van_genuchten",
+    "types": {
+      "default": {
+        "name": "sandiger_lehm_SL8",
+        "Ks": 1.23e-05,
+        "theta_s": 0.41,
+        "theta_r": 0.065,
+        "alpha": 7.5,
+        "n": 1.89
+      }
+    }
+  },
+  "initial_conditions": {
+    "type": "layered",
+    "layers": [
+      {
+        "eta_range": [
+          0,
+          3
+        ],
+        "theta": 0.3
+      },
+      {
+        "eta_range": [
+          3,
+          30
+        ],
+        "theta": 0.1
+      },
+      {
+        "eta_range": [
+          30,
+          41
+        ],
+        "theta": 0.2
+      }
+    ]
+  }
+}

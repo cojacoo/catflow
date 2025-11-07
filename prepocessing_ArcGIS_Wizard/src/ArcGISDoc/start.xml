@@ -1,0 +1,394 @@
+<chapter>
+  <title>
+    Before you start using the Catflow Wizard
+  </title>
+  <para id='prerequisites'>
+    The Catflow Wizard helps to prepare the input files for 
+    <link linkend='catflowIntro'>Catflow</link> from GIS data.
+    The wizard was developed with ArcMap 8.3 (Build 800). It has not
+    been tested on other versions of ArcMap.
+  </para>
+  <para>  
+    Four shape files are required to work with the wizard as shown below.
+    <note> The wizard does not work with coverages or geodatabases </note>
+    If you are uncertain about how to create these 
+    input files from the digital elevation model, check the chapter 
+    <link linkend='stepWise'>'Step wise creation of input files'</link> for furhter
+    instructions.
+    <orderedlist numeration="arabic">
+      <listitem>
+        <para><link linkend='creatingDEM'>Digital Elevation Model </link></para>
+        <graphic fileref="figures/MalalcDEM.png" >
+        </graphic>
+      </listitem>
+      <listitem>
+        <para><link linkend='CreatingRiverNetwork'>Vectorized river network</link></para>
+        <graphic  fileref="figures/malaRiver.png" >
+        </graphic>
+      </listitem>
+      <listitem>
+        <para><link linkend='creatingSlopePoly'>Slope delineation</link></para>
+        <graphic fileref="figures/hillslope.png" >
+        </graphic>
+      </listitem>
+      <listitem>
+        <para><link linkend='creatingSlopeLine'>Vectorized slope lines</link></para>
+        <graphic fileref="figures/slopeline.png" >
+        </graphic>
+      </listitem>
+    </orderedlist>
+    
+  </para>
+  <section id='catflowIntro'>
+    <title>
+      Introduction to Catflow
+    </title>
+    <para>
+      This section corresponds to the first two chapters of 
+      <xref linkend="catflowdoku"/>
+      
+    </para>
+    <section>
+      <title>
+        Introduction
+      </title>
+      <para>
+        CATFLOW is a physically based, distributed model for simulating the dynamics of water and solutes in small rural catchments on the event and season time scale. The considered control volume consists of the upper soil layer including the vegetation canopy, with the atmosphere and possibly groundwater imposing boundary conditions onto the system. Keeping in mind the aim of modelling the transport processes of dissolved and suspended substances including contaminants, both at the surface (erosion and wash-off) and underground (transport towards groundwater and channel), a process-oriented approach is chosen to model the inner structure of catchments as thoroughly as possible. This permits the examination of the interaction between subsystems, and finally enables the derivation of simplifications.
+      </para>
+      <para>
+        The model is based on the idea of subdividing the 3D-landscape in patches of 2D-hillslopes of variable width (assuming water flowing normal to the topographical contours) connected to a detailed (partly ephemeral) drainage network. Fig. 2.1 gives an idea of the approach for the Weiherbach cachtment. Though there have been developments based on this or similar ideas in the past (Jayawardena &amp; White, 1977; Jayawardena &amp; White, 1979; Beven et al., 1987; Calver &amp; Wood, 1995; Vertessy et al., 1993) a new effort has been undertaken to improve concept and structure of this type of model. 
+      </para>
+      <para>
+        As has been shown (Mesa &amp; Mifflin, 1986) and is well understood today (Singh, 1995a), with increasing size of a catchment the shape of a hydrograph is more and more influenced by the properties of the drainage network rather then by overland flow; the latter then mainly has to provide realistic estimates of event based runoff coefficients. However, increasing size is a relative measure. If we trace down the drainage network into every single swale of the landscape (which of course requires a detailed spatial resolution of elevation) above considerations are valid for even very small catchments. What we get is a partial decoupling of runoff production and runoff propagation allowing us to put to work all the well-established methods developed in open channel flow and flood routing. CATFLOW implements schemes based on the simplified St. Venant equations. Thus we have achieved somewhat a reduction of the dimension of the problem. 
+      </para>
+      <para>
+        As has been pointed out e.g. by (Kuehnel et al., 1990a; Kuehnel et al., 1990b; Wang &amp; Dooge, 1993) runoff coefficients are determined by proper evaluation of infiltration and evapo-transpiration, both at times controlled by either soil or atmospheric conditions. CATFLOW spends considerable efforts in a more precise description of these processes. 
+      </para>
+      <variablelist><title>Special features of the system include:</title>
+        <varlistentry><term>Problem-oriented domain decomposition and time-step control</term>
+          <listitem>
+            <para>
+              The subdivision of the catchment area is carried out based on the topography. Beginning with the detailed drainage network and delineated subcatchments, hillslope areas are identified and then idealised as vertical longitudinal sections of variable width along the steepest gradient of the topography. This decomposition supports a far-reaching decoupling of runoff production at the hillslope and runoff propagation in the drainage network, where flow can be described in a more hydrodynamicly substantiated sense. Then, the longitudinal cross-sections as well as the drainage network are discretised taking into account the zones expected to be hydrologically most active.
+            </para>
+            <para>
+              Based on geomorphologically motivated considerations an efficient and simple parameterisation scheme has been developed in order to describe the complex geometry of the detailed drainage network. 
+            </para>
+          </listitem>
+        </varlistentry>
+        <varlistentry><term>Process-based modelling</term>
+          <listitem>
+            <para>
+              The modelling scale is close to the process scale. This property of physically based models permits the consideration of the interaction between all relevant processes based on field observations. These are: evapo-transpiration, interception, infiltration and two-dimensional water movement in the soil matrix and preferential pathways, transport, ad- and desorption and degradation of non conservative solutes in the saturated/unsaturated zone as well as surface runoff, subsurface flow and channel flow (including runoff from sealed surfaces) under the influence of temporally and spatially variable climatic boundary conditions and land use. Last not least the possible interaction between channel flow and the saturated zone, i.e. groundwater influence or effluence has to be taken into account. 
+            </para>
+          </listitem>
+        </varlistentry>
+        <varlistentry><term>Flexible spatial/temporal resolution of boundary conditions and parameters</term>
+          <listitem>
+            <para>
+              A prerequisite for the examination of interactions between those various processes and properties is the possibility of handling all data at an arbitrary spatial/temporal resolution. This requirement is also important with respect to a problem-oriented time-step control and has been met by implementing a suitable data structure. 
+            </para>
+          </listitem>
+        </varlistentry>
+        <varlistentry><term>Relational data management</term>
+          <listitem>
+            <para>
+              To ensure the user-friendliness of the modelling system, the large amounts of temporally and spatially variable input and output data of state variables and both system and environment parameters are organised in a relational data structure, i.e. as an indicated system of tables and flexible input formats.
+            </para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+      <para>
+        Furthermore, special emphasis has been put on the following features:
+        <itemizedlist mark='opencircle'>
+          <listitem>                   
+            <para>
+              Hillslope geometry is described by use of orthogonal, curvilinear coordinates as described e.g. by Kiefer et al. (1990 )to (a) flexible model the irregular boundaries and (b) to more easily conduct numerical solution of Richards equation for matrix flow on a mathematical rectangular grid. 
+            </para> 
+          </listitem>
+          <listitem>                   
+            <para>
+              Potential based solution of Richards equation using Picard iteration and Taylorseries expansion of the moisture content with respect to the Potential as described by (Hornung &amp; Messing, 1984; Celia et al., 1990) thus allowing for modelling of saturated conditions. Solute transport is described by means of a two dimensional transport equation of the Convection-Dispersion-type (Briggar &amp; Nielsen, 1967; Roth et al., 1996), including first order decay and linear, instantaneous sorption. The transport equation is numerically solved by means of the particle tracking method (Zehe, 1999; Thompson, 1987; Kinzelbach &amp; Uffink, 1991). 
+            </para> 
+          </listitem>
+          <listitem>                   
+            <para>
+              A simplified method for transport of water and solutes in preferential pathways. If the relative saturation S at the soil surface of a macroporous soil layer exceeds a threshold value, the saturated hydraulic conductivity is increased by a macroporousity factor. An effective pore water velocity is computed by averaging the corresponding values in the soil matrix and in the macropores in a grid cell. The required model parameters, i.e. the macroporousity factor fmac and the macroporous cross section in a grid cell amac may easily be derived from field and laboratory data (Zehe, 1999).
+            </para> 
+          </listitem>
+          <listitem>                   
+            <para>
+              Soil properties i.e. their hydraulic functions and transport parameter are provided in tables, thus allowing for easy inclusion of different descriptions. Currently the Van Genuchten (1980) and Mualem (1976) model is used mostly.
+            </para> 
+          </listitem>
+          <listitem>                   
+            <para>
+              Channel flow within the drainage network is calculated based on the kinematic wave or the diffusion wave simplifications of the St. Venant equation. Moreover interaction between channel flow and shallow groundwater, i.e. ground water influence or effluence may be accounted for. In this case, the water table in the channel determines a time dependent Dirichlet (pressure) boundary condition at the boundary of the corresponding hill slopes.
+            </para> 
+          </listitem>
+        </itemizedlist>
+        Each hillslope has its individual time step control, thus reducing overall CPU time consumption.
+      </para>
+      <para>
+        Thus, CATFLOW is a flexible tool for detailed modelling of catchments water- and solute dynamics at users desire of resolution. 
+      </para>
+      <para>
+        A thorough description of CATFLOWs' theory and applications is given in detail by (Maurer, 1997a; Zehe, 1999). In these studies, the modelling system and extensively collected data have been used to parameterise, calibrate, and verify a model of the research catchment "Weiherbach" near Karlsruhe. In that context, an important aim was the synthesis and integration of numerous experimental results and the detailed research of individual processes performed by other authors.
+      </para>
+    </section>
+    <section>
+      <title>
+        Overview
+      </title>
+      <para>
+        CATFLOW is a physically based, distributed model for the dynamics of water and transport of solutes in the upper soil layer of small rural catchments (including channel network and vegetation cover) on the event and season time scale. The model is based on the idea of subdividing the 3D-landscape in patches of 2D-hillslopes of variable width (assuming water flowing normal to the topographical contours) connected to a detailed (partly ephemeral) drainage network. Fig. 2.1 shows an example. The approach relies on the assumption of deterministic behaviour, i.e. starting from some initial condition the change of state variables under changing boundary conditions can be calculated. 
+      </para>
+      <section>
+        <title>
+          State variables
+        </title>
+        <para>
+          The physically based, distributed model of high spatio-temporal resolution calculates the following state variables
+          <itemizedlist mark='opencircle'>
+            <listitem>                   
+              <para>
+                soil water potential,
+              </para> 
+            </listitem>
+            <listitem>                   
+              <para>
+                surface water depth,
+              </para> 
+            </listitem>
+            <listitem>                   
+              <para>
+                interception storage
+              </para> 
+            </listitem>
+            <listitem>                   
+              <para>
+                residual concentration of various solutes in the soil .
+              </para> 
+            </listitem>
+          </itemizedlist>
+        </para>
+      </section>
+      <section>
+        <title>
+          Geometry
+        </title>
+        <para>
+          The geometry of the system under consideration (upper soil layer) is described by the following data:
+          <itemizedlist mark='opencircle'>
+            <listitem>                   
+              <para>
+                digital elevation model,
+              </para> 
+            </listitem>
+            <listitem>                   
+              <para>
+                channel profiles and elevations,
+              </para> 
+            </listitem>
+            <listitem>                   
+              <para>
+                soil hydraulic functions,
+              </para> 
+            </listitem>
+            <listitem>                   
+              <para>
+                macroporosity,
+              </para> 
+            </listitem>
+            <listitem>                   
+              <para>
+                surface roughness,
+              </para> 
+            </listitem>
+            <listitem>                   
+              <para>
+                channel roughness,
+              </para> 
+            </listitem>
+            <listitem>                   
+              <para>
+                parameters determining interaction between channel flow and the saturated zone,
+              </para> 
+            </listitem>
+            <listitem>                   
+              <para>
+                plant parameters.
+              </para> 
+            </listitem>
+          </itemizedlist>
+        </para>
+      </section>
+      <section>
+        <title>
+           Processes
+        </title>
+        <para>
+          The model simulates various processes of water transport, as
+          <itemizedlist mark='opencircle'>
+            <listitem>                   
+              <para>
+                fluxes in saturated/unsaturated soil matrix, 
+              </para> 
+            </listitem>
+            <listitem>                   
+              <para>
+                return flow,
+              </para> 
+            </listitem>
+            <listitem>                   
+              <para>
+                surface runoff,
+              </para> 
+            </listitem>
+            <listitem>                   
+              <para>
+                subsurface storm flow 
+              </para> 
+            </listitem>
+            <listitem>                   
+              <para>
+                water movement and solute transport in the soil matrix
+              </para> 
+            </listitem>
+            <listitem>                   
+              <para>
+                water movement and solute transport in preferential pathways,
+              </para> 
+            </listitem>
+            <listitem>                   
+              <para>
+                linear, instantaneous equilibrium adsorption
+              </para> 
+            </listitem>
+            <listitem>                   
+              <para>
+                first order decay of non conservative solutes
+              </para> 
+            </listitem>
+            <listitem>                   
+              <para>
+                ground water influence or effluence
+              </para> 
+            </listitem>
+            <listitem>                   
+              <para>
+                transpiration,
+              </para> 
+            </listitem>
+            <listitem>                   
+              <para>
+                evaporation,
+              </para> 
+            </listitem>
+            <listitem>                   
+              <para>
+                interception,
+              </para> 
+            </listitem>
+            <listitem>                   
+              <para>
+                channel flow,
+              </para> 
+            </listitem>
+            <listitem>                   
+              <para>
+                interactions near stream,
+              </para> 
+            </listitem>
+            <listitem>                   
+              <para>
+                runoff from sealed surfaces.
+              </para> 
+            </listitem>
+          </itemizedlist>
+        </para>
+      </section>
+      <section>
+        <title>
+          Boundary conditions
+        </title>
+        <para>
+          Systems state is changed by these processes under the impact of (mostly climatic) boundary conditions, as 
+          <itemizedlist mark='opencircle'>
+            <listitem>                   
+              <para>
+                precipitation,
+
+              </para> 
+            </listitem>
+            <listitem>                   
+              <para>
+                net radiation,
+
+              </para> 
+            </listitem>
+            <listitem>                   
+              <para>
+                temperature,
+
+              </para> 
+            </listitem>
+            <listitem>                   
+              <para>
+                humidity,
+
+              </para> 
+            </listitem>
+            <listitem>                   
+              <para>
+                wind speed and wind direction,
+
+              </para> 
+            </listitem>
+            <listitem>                   
+              <para>
+                ground water levels.
+              </para> 
+            </listitem>
+          </itemizedlist>
+        </para>
+      </section>
+      <para>
+        Due to its high spatio-temporal resolution and thus data needs, CATFLOW requires a considerable number of files to be prepared and specified in project control files. Files are organized in a hierarchical way (Fig. 2.2)., reflecting the relational data structure used throughout the program.
+      </para>
+      <para>
+        All geometric data are geo-referenced to a global coordinate system as well as all time series data are time-referenced to the actual date which can be input in a format dd.mm.yyyy hh:mm:ss.hs (CHAR*22 ). Care is taken to synchronise all temporal data with reference to the date. 
+      </para>
+      <para>
+        The program and its input is based on SI-units (meters, seconds, kilo grams and ampere) if not stated otherwise. However, often conversion factors to SI-units can be assigned to input files, thus allowing the use of more familiar units. 
+      </para>
+      <figure>
+        <title>Topographic analysis of the "Weiherbach-catchment" up to the gauge Menzingen (3.5 km2)</title>
+        <graphic fileref="figures/weiherbach.png"/>
+      </figure>
+      <figure>
+        <title>Input files hierarchy in program CATFLOW</title>
+        <graphic fileref="figures/inputfiles.png"/>
+      </figure>
+    </section>
+    <section id='strahlerOrder'>
+      <title>
+        Definitions
+      </title>    
+      <variablelist>
+        <varlistentry><term>Strahler Order</term>
+          <listitem>
+            <para>
+               <ulink url="http://www.epa.gov/nheerl/arm/terms.htm#st">
+               From EPA, Aquatic Resources Monitoring - Terminology
+               </ulink>
+               Hierarchical ordering of streams based on the degree of branching. A first-order stream is an unforked or unbranched stream. Two
+                first-order streams flow together to form a second-order stream, two second-order streams combine to make a third-order stream, etc. (Strahler 1957).
+                This ordering method starts at zero at each terminal segment, and proceeds towards the root stream. Each time a bifurcation node is encountered, if
+                both daughter branches have the same order, then the order is increased by one, otherwise the largest order is used. 
+            </para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+    </section>
+  </section>
+</chapter>

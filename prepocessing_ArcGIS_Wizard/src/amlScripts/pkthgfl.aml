@@ -1,0 +1,139 @@
+/* Name: pkthgfl.aml
+/* Schleife, die alle Haenge durchgeht und fuer jeden Hang
+/* Thiessen-Polygone produziert, Ergebnis sind Punkte mit den Attributen
+/* Pkt_Id Hang_ID Th_Flaeche
+/* Ausgabe in Datei pkthgfl.out
+/* Start in ARC
+/* Unterroutine edit_kill.aml
+/* EINGABEN -----------------
+/* Anzahl der Haenge vorgeben
+/* Modifiziert fuer Heumoeser Bach, Ebnit, Oesterreich
+/* M. Casper, 16.2.2001
+/* F. Lindenmaier 28.01.2003
+
+/* BEGINN EINGABE
+/* Zahl der vorhandenen Haenge
+&sv .n_haenge = 13
+
+/* Coverage mit Hangflaechen
+&sv .hang_cover = s_cf_area
+
+/* Coverage mit Punkten entlang der Hangfalllinie
+&sv .pkt_cover = s_h_p_id
+
+/* Name der Ausgabecoverage
+&sv aus_cover = s_cf_th
+
+/* Zahl der Haengcoverages auf Zeile 80 zu modifizieren
+
+/* ENDE EINGABE -------------
+
+/* Schleife über alle Hangeinzugsgebiets-Polygone 
+display 0
+&do i = 1 &to %.n_haenge%
+ ARCEDIT
+ edit %.hang_cover%
+ ef poly
+ select %.hang_cover%-id = %i%
+ put hang%i%p
+ edit hang%i%p
+ clean
+ 
+/* TRICK: Schreibe auch Umrandungslinien in PunkteCover -> Boundary wird bei
+/* Thiessen erweitert!! 
+
+ ef arc
+ select all
+ put hang%i%a
+ save
+ create hang%i% %.hang_cover%
+ edit %.pkt_cover%
+ ef point
+ select %.hang_cover%-id = %i%
+ put xxhang%i%
+ edit hang%i%
+ ef point
+ get xxhang%i%
+ ef arc
+ get hang%i%a
+ save
+ QUIT
+ kill xxhang%i% all
+ build hang%i% points
+ 
+/* THIESSENPOLYGONE erzeugen
+
+ thiessen hang%i% hang%i%_th
+ intersect hang%i%_th hang%i%p hang%i%sp POLY # NOJOIN
+ TABLES
+   additem hang%i%sp.pat area_th 8 8 F 2
+   select hang%i%sp.pat
+   calculate area_th = area  
+ QUIT
+ intersect %.pkt_cover% hang%i%sp hang%i%end POINT # JOIN
+
+/*ueberfluessige Punkte in hang%i%end loeschen die durch intersect 
+/*entstanden sind
+ ARCEDIT
+   edit hang%i%end
+   ef point
+   select %.hang_cover%-id ne %i%
+   &if [show number select] ne 0 &then delete
+   save
+ QUIT  
+   
+/* alle Items loeschen, die ueberfluessig sind, um append moeglich zu machen
+/* append arbeitet nur, wenn alle items gleich (ausser # und -ID)
+
+ TABLES
+   dropitem hang%i%end.pat hang%i%sp# hang%i%sp-id hang%i%_th# hang%i%p#
+   dropitem hang%i%sp.pat hang%i%_th# hang%i%p#
+  QUIT
+&end
+
+/* alle Haenge wieder in 1 Datei schreiben
+/* Zur Darstellung alle Arcs der Thiessenpolygone in ein Coverage
+
+append %aus_cover%_p poly
+hang1sp
+hang2sp
+hang3sp
+hang4sp
+hang5sp
+hang6sp
+hang7sp
+hang8sp
+hang9sp
+hang10sp
+hang11sp
+hang12sp
+hang13sp
+END
+
+/* Zur Ausgabe alle Punkte mit Attr. in ein Coverage
+
+append %aus_cover% points
+hang1end
+hang2end
+hang3end
+hang4end
+hang5end
+hang6end
+hang7end
+hang8end
+hang9end
+hang10end
+hang11end
+hang12end
+hang13end
+END
+
+TABLES
+  select %aus_cover%.pat
+  unload pkthgfl.out %.pkt_cover%-id %.hang_cover%-id area_th
+QUIT  
+
+/* alles ueberfluessige loeschen
+&r edit_kill
+
+&return

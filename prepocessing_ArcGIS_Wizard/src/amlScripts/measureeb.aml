@@ -1,0 +1,54 @@
+/********************************************************************************** 
+/* Programm: MEASUREEB.AML  
+/*
+/* Zweck: Praeprozessing für Catflow                                       
+/* Routine zur Aufteilung von einzelnen Haengen in aequidistante     
+/* Abschnitte. Das zu bearbeitende Coverage muss einzelne Haenge haben, die in
+/* Richtung des Gefaelles orientiert (Arrows) und einheitlich durchnummeriert 
+/* sind, vorzugsweise in logischer Abfolge (Feld: Hangcoverage-id).
+/* Argumente:                    keine
+/* Annahmen:                     keine
+/* Ausgaben:                     
+/* Programmaufruf:               &r measureta.aml %editcover%
+/* erzeugte Globalvariablen:
+/* notwendige Globalvariablen:
+/* Systemabhängigkeiten:         keine
+/* Subroutine:                   measure.aml
+/* 
+/* erstellt 11.2.2001, M. Casper, IWK                             
+/* dokumentiert und angepasst 18.01.2002 F. Lindenmaier
+/*
+/* -------------------------------------------------------------------------
+/* Zahl der Hänge fuer Schaefer Bach: 15
+/* die Haenge muessen von 1 bis maxhang durchnummeriert sein!     
+/* Eingabe: &r measureeb %Name des Hangcoverages%
+
+/* LineCoverage, das editiert werden soll
+/* &sv editcover = haenge_sh
+&args editcover
+
+/* Entfernung eingeben
+&sv distance = 15
+
+/* Anzahl Haenge eingeben
+&sv maxhang = 13
+
+/* Abbruchbedingung .ende = 1
+&sv .ende = 0
+
+/* Hauptrogramm
+edit %editcover%
+ef arc
+&do j = 1 &to %maxhang%
+select %editcover%-id = %j%
+&sv .ende = 0
+  &sv i = 1
+  /* Schleife
+  &do &until %i% = 1000
+    /* Programmaufruf
+    &if %.ende% = 0 &then &r measure %distance%
+  &sv i = %i% + 1
+  &end
+&end
+save
+&return

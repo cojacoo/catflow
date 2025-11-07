@@ -1,0 +1,152 @@
+/* MEASURE.AML (ArcEdit)
+/* Splits a selected arc at the specified distance from its 
+/* from node.  Distance is measured along the arc, i.e. from
+/* vertex to vertex to locate the point where the arc will be
+/* split.  After splitting the arc, the portion containing the
+/* original from node is unselected leaving the portion
+/* containing the original to node selected.  Therefore, the 
+/* original arc can easily be split into a series of shorter
+/* arcs of equal length by repeating the same command until
+/* the remaining portion of the arc is shorter than the 
+/* specified distance.
+/* 
+/* Error messages are issued if the coverage does not have
+/* arc topology, the edit feature is something other than
+/* arc, no arc is selected, multiple arcs are selected, or
+/* the selected arc is shorter than the specified distance.
+/* Modifikation: M. Casper, 18.8.2000
+/*               F. Lindenmaier, 18.01.2003
+/* Setzt bei jeglicher Fehlermeldung die Variable .ende auf 1
+
+/* Get the target distance.
+&args target_distance
+
+&if %.ende% = 1 &then 
+   &do
+     &type ERROR: Beim Start die Variable .ende = 0 setzen!!
+     &return
+   &end
+
+
+/* Display usage if invalid.
+&if [null %target_distance%] or [type %target_distance%] > 0 &then
+   &do
+     &sv .ende = 1
+     &stop Usage: MEASURE <target_distance>
+   &end
+&if %target_distance% < 0 &then
+   &do
+     &sv .ende = 1
+     &stop ERROR: Target_distance must be positive.
+   &end
+&if not [exist [show ec] -line] &then
+   &do
+     &sv .ende = 1
+     &stop ERROR: Coverage must have arc topology.
+   &end
+&if [show ef] <> ARC or [show number select] <> 1 &then
+   &do
+     &sv .ende = 1
+     &return
+   &end
+   
+/* Determine weed distance and length of current arc.
+&sv weed_distance [show weedtolerance]
+&messages &off &all
+cursor open
+&sv arc_length %:edit.length%
+
+/* Display error message if split point is within the weed distance
+/* of either end of the arc.
+&if %target_distance% < %weed_distance% or  ~
+   [calc %arc_length% - %target_distance%] < %weed_distance% &then
+   &do
+      &type Error: Unable to split arc because target distance is within current
+      &type        weed tolerance (%weed_distance%) of beginning or end of arc.
+      &messages &on
+      &sv .ende = 1
+      &return
+   &end
+
+/* Display error message if arc is shorter than target distance.
+&if %arc_length% < %target_distance% &then
+   &do
+      &type Error: Selected arc is shorter than target distance (%target_distance%).
+      &messages &on
+      &sv .ende = 1
+      &return
+   &end
+
+/* Put the arc to a temporary coverage.
+&sv tempcover [scratchname -directory]
+put %tempcover%
+
+/* Dump the coordinates of the arc to a temporary system file,
+/* then kill the temporary coverage.
+&data arc
+   &sv tempfile [scratchname -file]
+   ungenerate line %tempcover% %tempfile%
+   kill %tempcover%
+   quit
+&end
+
+/* Open the file and determine the coordinates of the first line segment
+&sv infile [open %tempfile% openstatus -read]
+&sv id [read %infile% readstatus]
+&sv data [read %infile% readstatus]
+&sv x1 [extract 1 [unquote %data%]]
+&sv y1 [extract 2 [unquote %data%]]
+&sv data [read %infile% readstatus]
+&sv x2 [extract 1 [unquote %data%]]
+&sv y2 [extract 2 [unquote %data%]]
+
+/* Add line segment lengths until the distance travelled plus
+/* the current distance is greater than the target distance.
+&sv distance_travelled 0
+&sv done .FALSE.
+&do &until %done%
+   &sv a [abs [calc %x2% - %x1%]]
+   &sv b [abs [calc %y2% - %y1%]]
+   &sv c [sqrt  [calc %a% ** 2 + %b% ** 2]]
+   &if [calc %distance_travelled% + %c%] > %target_distance% &then
+      &do
+         &sv remaining %target_distance% - %distance_travelled%
+         &sv done .TRUE.
+      &end
+   &else
+      &do
+         &sv distance_travelled %distance_travelled% + %c%
+         &sv x1 %x2%
+         &sv y1 %y2%
+         &sv data [read %infile% readstatus]
+         &sv x2 [extract 1 [unquote %data%]]
+         &sv y2 [extract 2 [unquote %data%]]
+      &end
+&end
+
+/* Determine distance to move along current segment to reach
+/* the target distance, calculate the coordinates of the split
+/* point, and split the arc at that point.
+&sv distance_remaining %target_distance% - %distance_travelled%
+&sv proportion %distance_remaining% / %c%
+&sv xsplit %proportion% * [calc %x2% - %x1%] + %x1%
+&sv ysplit %proportion% * [calc %y2% - %y1%] + %y1%
+coordinate keyboard
+split
+%xsplit%, %ysplit%
+coordinate mouse
+
+/* Unselect the measured arc, leaving the remainder selected.
+unsel length < [calc %target_distance% + %weed_distance%] 
+&if [show number select] = 0 &then
+   &do
+     &type Warning: Arc cannot be further split with this target distance. 
+     &sv .ende = 1
+   &end
+/* Cleanup and return.
+&system remove %tempfile%
+&if [exists %tempcover% -cover] &then
+   kill %tempcover% all
+&sv closestatus [close %infile%]
+&message &on
+&return
