@@ -96,6 +96,7 @@
 !   hgcopy - Copy 2D array (source → destination)
 !   hgnull - Zero out 2D array
 !   hgadd  - Add two 2D arrays element-wise
+!   obcopy - Copy 1D surface flow array (source → destination)
 !
 ! EXTERNAL DEPENDENCIES:
 !   mesh_geometry_module: iacnv, iacnl (active grid dimensions)
@@ -157,6 +158,7 @@ module hg_opera_module
     public :: hgcopy
     public :: hgnull
     public :: hgadd
+    public :: obcopy
 
 contains
 
@@ -368,5 +370,138 @@ contains
 
         return
     end subroutine hgadd
+
+    !===========================================================================
+    ! SUBROUTINE: obcopy
+    !
+    ! PURPOSE: Copy 1D surface flow array (source → destination)
+    !
+    ! DESCRIPTION:
+    !   Copies the active portion of a 1D surface array from source (A_in) to
+    !   destination (A_out). Unlike hgcopy which operates on 2D hillslope grids,
+    !   obcopy works on 1D surface flow arrays that vary only in the xsi (horizontal)
+    !   direction along the hillslope surface.
+    !
+    !   Used for surface flow state management:
+    !   - Surface water depth (yo_alt, yo_neu)
+    !   - Surface discharge (q)
+    !   - Effective rainfall accumulation
+    !   - Infiltration excess tracking
+    !
+    !   The copy is performed element-by-element:
+    !   A_out(il) = A_in(il)
+    !   for all il ∈ [1,iacnl(ih)]
+    !
+    !   Only the active horizontal extent (1 to iacnl(ih)) is copied.
+    !   The rest of the allocated array (up to maxnl) remains unchanged.
+    !
+    !   CRITICAL: Like hgcopy, this operation must be bit-exact. No transformations,
+    !   no approximations. Essential for:
+    !   - Surface flow time step rollback (exact state restoration)
+    !   - Boundary condition updates (precise value transfer)
+    !   - Kinematic wave solver state management
+    !
+    !   ARRAY STRUCTURE:
+    !   ===============
+    !
+    !   Surface flow arrays in CATFLOW are 1D:
+    !
+    !   Declared size: (maxnl)
+    !   - maxnl: Maximum nodes in xsi (horizontal) direction
+    !
+    !   Active size for hillslope ih: (iacnl(ih))
+    !   - iacnl(ih): Actual nodes in xsi direction for hillslope ih
+    !
+    !   These arrays represent surface conditions that vary along the
+    !   hillslope but are uniform in the vertical (eta) direction at
+    !   each horizontal position.
+    !
+    !   USAGE CONTEXT:
+    !   =============
+    !
+    !   Surface flow is governed by kinematic wave equation:
+    !   ∂h/∂t + ∂q/∂x = r_eff
+    !
+    !   where:
+    !   - h: surface water depth [m]
+    !   - q: surface discharge [m²/s]
+    !   - r_eff: effective rainfall (rainfall - infiltration) [m/s]
+    !
+    !   obcopy manages these 1D surface state variables during:
+    !   - Time integration (save/restore)
+    !   - Boundary updates (upstream/downstream coupling)
+    !   - Output generation (snapshot current state)
+    !
+    !   PHYSICAL INTERPRETATION:
+    !   =======================
+    !
+    !   Surface flow occurs when:
+    !   1. Infiltration capacity exceeded (Hortonian overland flow)
+    !   2. Soil saturated to surface (saturation excess flow)
+    !   3. Return flow from subsurface (exfiltration)
+    !
+    !   The 1D approximation assumes:
+    !   - Flow primarily downslope (along xsi direction)
+    !   - Lateral spreading negligible
+    !   - Depth-averaged properties (no vertical structure in surface layer)
+    !
+    !   COMPARISON WITH hgcopy:
+    !   ======================
+    !
+    !   hgcopy:  2D arrays (maxnv, maxnl)     - subsurface state variables
+    !   obcopy:  1D arrays (maxnl)            - surface state variables
+    !
+    !   Both preserve exact bit-for-bit reproduction.
+    !   Both respect active grid dimensions.
+    !   Both used for state management in time stepping.
+    !
+    ! ARGUMENTS:
+    !   A_in  - Source array [real(8)(maxnl), input]
+    !   A_out - Destination array [real(8)(maxnl), output]
+    !   ih    - Hillslope index [integer(4), input]
+    !
+    ! USES:
+    !   mesh_geometry_module: iacnl
+    !   constants_module: maxnl
+    !
+    ! NOTES:
+    !   - Arrays can overlap in memory (same variable) - this is valid
+    !   - No temporary storage needed
+    !   - Compiler may optimize to memcpy() for contiguous sections
+    !   - Preserves ALL bits (exact copy, not numerical approximation)
+    !   - Single loop (1D) vs nested loops (2D) in hgcopy
+    !
+    ! PERFORMANCE:
+    !   - Called several times per time step for surface flow
+    !   - Typical array sizes: 50-200 nodes (much smaller than 2D arrays)
+    !   - Operation count: iacnl(ih) assignments (~8 bytes each)
+    !   - Memory bandwidth: 2 × iacnl(ih) × 8 bytes (read + write)
+    !
+    ! VALIDATION:
+    !   - Verify A_out(il) = A_in(il) for all active il
+    !   - Check bit-exact reproduction
+    !   - Ensure only active region [1:iacnl(ih)] is modified
+    !   - Test with surface flow rollback scenarios
+    !
+    ! ORIGINAL: HG_OPERA.f line ~109 (Fortran 77)
+    ! CONVERTED: 2025-11-09
+    !===========================================================================
+    subroutine obcopy(A_in, A_out, ih)
+        use mesh_geometry_module, only: iacnl
+        implicit none
+
+        real(8),    intent(in)  :: A_in(maxnl)
+        real(8),    intent(out) :: A_out(maxnl)
+        integer(4), intent(in)  :: ih
+
+        integer(4) :: il
+
+        ! Copy active region of 1D surface array
+        do il = 1, iacnl(ih)
+            A_out(il) = A_in(il)
+        end do
+
+        return
+    end subroutine obcopy
 
 end module hg_opera_module
