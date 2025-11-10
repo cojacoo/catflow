@@ -51,7 +51,8 @@ MOD_L2 = state_data_module.f90 \
          soil_properties_module.f90 \
          boundary_conditions_module.f90 \
          time_module.f90 \
-         additional_modules.f90
+         additional_modules.f90 \
+         input_stubs.f90
 
 # Level 3: Physics modules (depend on L1 and L2)
 PHYS_MODS = $(PHYSDIR)/kinnen.f90 \
@@ -60,6 +61,7 @@ PHYS_MODS = $(PHYSDIR)/kinnen.f90 \
             $(PHYSDIR)/dcg.f90 \
             $(PHYSDIR)/hg_opera.f90 \
             $(PHYSDIR)/addsteps.f90 \
+            $(PHYSDIR)/stubs.f90 \
             $(PHYSDIR)/steps.f90 \
             $(PHYSDIR)/bodtab.f90 \
             $(PHYSDIR)/balanc.f90 \
@@ -148,6 +150,10 @@ $(OBJDIR)/additional_modules.o: additional_modules.f90 $(OBJDIR)/constants_modul
 	@echo "Compiling $<"
 	$(FC) $(FFLAGS) -J$(MODDIR) -c $< -o $@
 
+$(OBJDIR)/input_stubs.o: input_stubs.f90 $(OBJDIR)/constants_module.o
+	@echo "Compiling $<"
+	$(FC) $(FFLAGS) -J$(MODDIR) -c $< -o $@
+
 # Physics modules (compile in dependency order)
 $(OBJDIR)/dcg.o: $(PHYSDIR)/dcg.f90 $(OBJS_L1) $(OBJS_L2)
 	@echo "Compiling $<"
@@ -189,11 +195,15 @@ $(OBJDIR)/addsteps.o: $(PHYSDIR)/addsteps.f90 $(OBJS_L1) $(OBJS_L2)
 	@echo "Compiling $<"
 	$(FC) $(FFLAGS) -J$(MODDIR) -c $< -o $@
 
-$(OBJDIR)/steps.o: $(PHYSDIR)/steps.f90 $(OBJS_L1) $(OBJS_L2) $(OBJDIR)/addsteps.o $(OBJDIR)/dcg.o
+$(OBJDIR)/stubs.o: $(PHYSDIR)/stubs.f90 $(OBJS_L1) $(OBJS_L2)
 	@echo "Compiling $<"
 	$(FC) $(FFLAGS) -J$(MODDIR) -c $< -o $@
 
-$(OBJDIR)/hg.o: $(PHYSDIR)/hg.f90 $(OBJS_L1) $(OBJS_L2) $(OBJDIR)/steps.o
+$(OBJDIR)/steps.o: $(PHYSDIR)/steps.f90 $(OBJS_L1) $(OBJS_L2) $(OBJDIR)/addsteps.o $(OBJDIR)/dcg.o $(OBJDIR)/hg_opera.o $(OBJDIR)/bodtab.o $(OBJDIR)/koeffrb.o
+	@echo "Compiling $<"
+	$(FC) $(FFLAGS) -J$(MODDIR) -c $< -o $@
+
+$(OBJDIR)/hg.o: $(PHYSDIR)/hg.f90 $(OBJS_L1) $(OBJS_L2) $(OBJDIR)/steps.o $(OBJDIR)/bodtab.o $(OBJDIR)/balanc.o $(OBJDIR)/hg_opera.o $(OBJDIR)/rd_wr.o $(OBJDIR)/tcalw.o $(OBJDIR)/addsteps.o $(OBJDIR)/stubs.o
 	@echo "Compiling $<"
 	$(FC) $(FFLAGS) -J$(MODDIR) -c $< -o $@
 

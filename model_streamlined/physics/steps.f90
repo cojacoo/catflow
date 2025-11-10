@@ -117,6 +117,11 @@
 !===============================================================================
 module steps_module
     use constants_module, only: maxnv, maxnl
+    use bodtab_module, only: kc_phi
+    use hg_opera_module, only: hgcopy, hgnull, hgadd
+    use dcg_module, only: cg_solv
+    use addsteps_module, only: chko_rb, rand_fl, ex_ie, ee_ix, pic_it, expcal
+    use koeffrb_module, only: koeffrb
     implicit none
     private
 
@@ -175,15 +180,12 @@ contains
         logical :: rbchg
         character(80) :: rblog
 
-        external :: chko_rb, rand_fl
-        external :: koeff, expcal
-
         n_chg = 0
         rbchg = .false.
         abbruch = .false.
 
  1000   continue
-            call koeff(ih, dt)
+            call koeffrb(ih, dt)
             call expcal(ih)
 
             call rand_fl(ih)
@@ -264,15 +266,12 @@ contains
         logical :: rbchg
         character(80) :: rblog
 
-        external :: chko_rb, rand_fl
-        external :: koeff, cg_solv, hgcopy, kc_phi, hgnull
-
         n_chg = 0
         rbchg = .false.
         abbruch = .false.
 
  1000   continue
-            call koeff(ih, dt)
+            call koeffrb(ih, dt)
 
             ! Adjust RHS for implicit scheme
             do iv = 1, iacnv(ih)
@@ -369,9 +368,6 @@ contains
         logical :: rbchg
         character(80) :: rblog
 
-        external :: chko_rb, rand_fl
-        external :: koeff, ex_ie, ee_ix, kc_phi, hgcopy
-
         expant = 1.0d0
         ome = 0.0d0
         omx = 0.0d0
@@ -382,14 +378,14 @@ contains
 
  1000   continue
             ! First half-step: implicit in eta
-            call koeff(ih, dt/2.0d0)
+            call koeffrb(ih, dt/2.0d0)
             call ex_ie(phineu, ih, expant, ome)
 
             ! Update K and C at mid-step
             call kc_phi(phineu, ih)
 
             ! Second half-step: implicit in xsi
-            call koeff(ih, dt/2.0d0)
+            call koeffrb(ih, dt/2.0d0)
             call ee_ix(phineu, ih, expant, omx)
 
             call rand_fl(ih)
@@ -470,9 +466,6 @@ contains
         logical :: rbchg
         character(80) :: rblog
 
-        external :: chko_rb, rand_fl
-        external :: koeff, ex_ie, ee_ix, hgcopy, kc_phi
-
         expant = 1.0d0
         ome = 0.0d0
         omx = 0.0d0
@@ -484,7 +477,7 @@ contains
  1000   continue
             ! Predictor step (eta direction, dt/4)
             call hgcopy(phineu, philoc, ih)
-            call koeff(ih, dt/4.0d0)
+            call koeffrb(ih, dt/4.0d0)
             call ex_ie(phineu, ih, expant, ome)
 
             ! Corrector: update K and C
@@ -492,7 +485,7 @@ contains
 
             ! Full first half-step (eta, dt/2 with corrected K,C)
             call hgcopy(philoc, phineu, ih)
-            call koeff(ih, dt/2.0d0)
+            call koeffrb(ih, dt/2.0d0)
             call ex_ie(phineu, ih, expant, ome)
 
             ! Update K and C after first half-step
@@ -500,7 +493,7 @@ contains
 
             ! Predictor step (xsi direction, dt/4)
             call hgcopy(phineu, philoc, ih)
-            call koeff(ih, dt/4.0d0)
+            call koeffrb(ih, dt/4.0d0)
             call ee_ix(phineu, ih, expant, omx)
 
             ! Corrector: update K and C
@@ -508,7 +501,7 @@ contains
 
             ! Full second half-step (xsi, dt/2 with corrected K,C)
             call hgcopy(philoc, phineu, ih)
-            call koeff(ih, dt/2.0d0)
+            call koeffrb(ih, dt/2.0d0)
             call ee_ix(phineu, ih, expant, omx)
 
             call rand_fl(ih)
@@ -603,11 +596,6 @@ contains
         logical :: rbchg
         character(80) :: rblog
 
-        external :: kc_phi, koeff, hgnull, hgadd, hgcopy
-        external :: pic_it
-        external :: cg_solv
-        external :: chko_rb, rand_fl
-
         n_it = 0
         abbruch = .false.
         n_cg = 0
@@ -617,7 +605,7 @@ contains
  1000   continue
             ! Picard iteration
             call hgnull(dPhi, ih)
-            call koeff(ih, dt)
+            call koeffrb(ih, dt)
             call pic_it(ih)
             call cg_solv(ih, dPhi, rsq, it_act, cgeps)
             call hgadd(phineu, dPhi, ih)
@@ -739,10 +727,6 @@ contains
         character(80) :: rblog
 
         intrinsic :: abs
-        external :: ex_ie, ee_ix
-        external :: kc_phi, koeff, hgnull, hgadd
-        external :: pic_it, hgcopy
-        external :: chko_rb, rand_fl
 
         n_it = 0
         abbruch = .false.
@@ -780,14 +764,14 @@ contains
             call hgcopy(phineu, philoc, ih)
 
             ! First half-step: implicit eta
-            call koeff(ih, dt)
+            call koeffrb(ih, dt)
             call pic_it(ih)
             call ex_ie(dPhi, ih, expant, ome)
             call hgadd(phineu, dPhi, ih)
 
             ! Update K and C at midpoint
             call kc_phi(phineu, ih)
-            call koeff(ih, dt)
+            call koeffrb(ih, dt)
             call pic_it(ih)
 
             ! Second half-step: implicit xsi

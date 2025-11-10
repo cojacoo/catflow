@@ -398,6 +398,14 @@ contains
                                    bm_l, bm_u, bm_r
         use hillslope_data_module, only: hangnr
         use steps_module, only: adistp, apkstp, bcgstp, piccg
+        use bodtab_module, only: kc_phi
+        use balanc_module, only: mtheta, stpdif, cal_q, stpbil, totbil
+        use hg_opera_module, only: hgcopy, obcopy
+        use rd_wr_module, only: wrres
+        use tcalw_module, only: dsps2ds, ds2diny
+        use addsteps_module, only: loadvz, savevz
+        use stubs_module, only: updyo, etintz, v_strb, ptkinj2, p_stepb, pmass, &
+                                 c_ipob, gl_copy
         implicit none
 
         ! Arguments
@@ -414,20 +422,6 @@ contains
         logical :: abbruch, rbchg, lerst
         character(22) :: datstr
         real :: tagnr, tagstd
-
-        ! External subroutines not yet modularized
-        external :: stpbil, totbil, stpdif, hgcopy, obcopy
-        external :: kc_phi
-        external :: wrres
-        external :: dsps2ds
-        external :: ds2diny
-        external :: mtheta
-        external :: cal_q
-        external :: loadvz, savevz
-        external :: updyo, etintz
-        external :: v_strb, ptkinj2
-        external :: p_stepb, pmass
-        external :: c_ipob, gl_copy
 
         ! Intrinsic functions
         intrinsic :: abs, max, min, dble
